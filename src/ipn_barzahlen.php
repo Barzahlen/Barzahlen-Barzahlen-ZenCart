@@ -22,6 +22,12 @@
  * @license     http://opensource.org/licenses/GPL-2.0  GNU General Public License, version 2 (GPL-2.0)
  */
 
+if(isset($_GET['state']) && preg_match('/^refund_/', $_GET['state'])) {
+    header("HTTP/1.1 200 OK");
+    header("Status: 200 OK");
+    die();
+}
+
 // catch $_GET content and unset $_GET to avoid abortion by application_top.php (hash, currency)
 $data = $_GET;
 unset($_GET);

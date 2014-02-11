@@ -44,7 +44,7 @@ class BarzahlenConfigRepository
     /**
      * Gets the last update date
      *
-     * @return bool|DateTime
+     * @return bool|int
      */
     public function getLastUpdateDate()
     {
@@ -57,7 +57,7 @@ SQL;
         $result = $this->db->Execute($sql);
 
         if ($result && is_array($result->fields)) {
-            $lastUpdate = new DateTime($result->fields['configuration_value']);
+            $lastUpdate = strtotime($result->fields['configuration_value']);
         } else {
             $lastUpdate = false;
         }

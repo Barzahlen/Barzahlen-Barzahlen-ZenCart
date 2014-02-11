@@ -28,7 +28,7 @@
 class BarzahlenVersionCheck
 {
     const SHOP_SYSTEM = "Zen Cart";
-    const PLUGIN_VERSION = "1.1.7";
+    const PLUGIN_VERSION = "1.1.8";
 
     /**
      * @var BarzahlenPluginCheckRequest
@@ -53,15 +53,14 @@ class BarzahlenVersionCheck
     /**
      * Checks if version was checked in last week
      *
-     * @param DateTime $now
+     * @param int $now
      * @return bool
      */
     public function isCheckedInLastWeek($now)
     {
         $lastUpdate = $this->configRepository->getLastUpdateDate();
         if ($lastUpdate) {
-            $lastUpdateTimestamp = $lastUpdate->getTimestamp();
-            $isChecked = ($now->getTimestamp() - $lastUpdateTimestamp) < 60 * 60 * 24 * 7;
+            $isChecked = ($now - $lastUpdate) < 60 * 60 * 24 * 7;
         } else {
             $isChecked = false;
         }

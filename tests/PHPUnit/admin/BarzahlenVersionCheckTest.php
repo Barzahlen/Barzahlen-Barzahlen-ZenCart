@@ -50,8 +50,8 @@ class BarzahlenVersionCheckTest extends PHPUnit_Framework_TestCase
 
     public function testCheckedInLastWeekReturnsTrueWhenLastCheckIsLongerAgoThanAWeek()
     {
-        $lastUpdateDate = new DateTime("2013-01-01 00:00:00");
-        $now = new DateTime("2013-01-06 00:00:00");
+        $lastUpdateDate = strtotime("2013-01-01 00:00:00");
+        $now = strtotime("2013-01-06 00:00:00");
 
         $this->configRepository
             ->expects($this->any())
@@ -66,8 +66,8 @@ class BarzahlenVersionCheckTest extends PHPUnit_Framework_TestCase
 
     public function testCheckedInLastWeekReturnsFalseWhenLastCheckIsNotLongerAgoThanAWeek()
     {
-        $lastUpdateDate = new DateTime("2013-01-01 00:00:00");
-        $now = new DateTime("2013-01-08 00:00:00");
+        $lastUpdateDate = strtotime("2013-01-01 00:00:00");
+        $now = strtotime("2013-01-08 00:00:00");
 
         $this->configRepository
             ->expects($this->any())
@@ -82,7 +82,7 @@ class BarzahlenVersionCheckTest extends PHPUnit_Framework_TestCase
 
     public function testCheckedInLastWeekReturnsFalseWhenRepositoryReturnsFalse()
     {
-        $now = new DateTime("2013-01-08 00:00:00");
+        $now = strtotime("2013-01-08 00:00:00");
 
         $this->configRepository
             ->expects($this->any())
@@ -125,7 +125,7 @@ class BarzahlenVersionCheckTest extends PHPUnit_Framework_TestCase
         $this->configRepository
             ->expects($this->any())
             ->method('getLastUpdateDate')
-            ->will($this->returnValue(new DateTime()));
+            ->will($this->returnValue(time()));
 
         $this->configRepository
             ->expects($this->once())

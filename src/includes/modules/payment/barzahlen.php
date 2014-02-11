@@ -55,7 +55,7 @@ class barzahlen
     function barzahlen()
     {
         $this->code = 'barzahlen';
-        $this->version = '1.1.7';
+        $this->version = '1.1.8';
         $this->title = MODULE_PAYMENT_BARZAHLEN_TEXT_TITLE;
         $this->description = '<div align="center">' . zen_image('https://cdn.barzahlen.de/images/barzahlen_logo.png', MODULE_PAYMENT_BARZAHLEN_TEXT_TITLE) . '</div><br>' . MODULE_PAYMENT_BARZAHLEN_TEXT_DESCRIPTION;
         $this->sort_order = MODULE_PAYMENT_BARZAHLEN_SORT_ORDER;
@@ -115,6 +115,7 @@ class barzahlen
         if ($order->info['total'] < MODULE_PAYMENT_BARZAHLEN_MAXORDERTOTAL) {
             $title = $this->title;
             $description = str_replace('{{image}}', zen_image('https://cdn.barzahlen.de/images/barzahlen_logo.png'), MODULE_PAYMENT_BARZAHLEN_TEXT_FRONTEND_DESCRIPTION);
+            $description = str_replace('{{special}}', zen_image('https://cdn.barzahlen.de/images/barzahlen_special.png', '', '', '', 'style="float: right; margin-left: 10px; max-width: 180px; max-height: 180px;"'), $description);
 
             if (MODULE_PAYMENT_BARZAHLEN_SANDBOX == 'True') {
                 $title .= ' [SANDBOX]';

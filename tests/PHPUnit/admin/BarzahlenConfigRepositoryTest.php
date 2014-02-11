@@ -71,7 +71,7 @@ SQL;
         $repository = $this->getRepository();
         $lastUpdateDate = $repository->getLastUpdateDate();
 
-        $this->assertEquals(new DateTime($date), $lastUpdateDate);
+        $this->assertEquals(strtotime($date), $lastUpdateDate);
     }
 
     public function testInsertLastUpdateDateDontReturnsError()

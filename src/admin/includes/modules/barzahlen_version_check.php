@@ -37,7 +37,7 @@ $barzahlenRepository = new BarzahlenConfigRepository($db);
 $barzahlenVersionCheck = new BarzahlenVersionCheck($barzahlenVersionCheckRequest, $barzahlenRepository);
 
 try {
-    if (MODULE_PAYMENT_BARZAHLEN_STATUS == "True" && !$barzahlenVersionCheck->isCheckedInLastWeek(new DateTime())) {
+    if (MODULE_PAYMENT_BARZAHLEN_STATUS == "True" && !$barzahlenVersionCheck->isCheckedInLastWeek(time())) {
         $barzahlenVersionCheck->check(MODULE_PAYMENT_BARZAHLEN_SHOPID, MODULE_PAYMENT_BARZAHLEN_PAYMENTKEY, PROJECT_VERSION_MAJOR . '.' . PROJECT_VERSION_MINOR);
         $displayUpdateAvailableMessage = $barzahlenVersionCheck->isNewVersionAvailable();
         $barzahlenNewestVersion = $barzahlenVersionCheck->getNewestVersion();

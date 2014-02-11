@@ -1,3 +1,8 @@
+==1.1.8 (11.02.2014)==
+* plugin check works in PHP versions lower than 5.2 now
+* bugfix for refund callbacks
+* updated payment selection layout
+
 ==1.1.7 (17.05.2013)==
 * automatic plugin version check once a week
 * small improvements for notification process
