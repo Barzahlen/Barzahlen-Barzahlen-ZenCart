@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * @copyright   Copyright (c) 2012 Zerebro Internet GmbH (http://www.barzahlen.de)
+ * @copyright   Copyright (c) 2013 Zerebro Internet GmbH (http://www.barzahlen.de)
  * @author      Alexander Diebler
  * @license     http://opensource.org/licenses/GPL-2.0  GNU General Public License, version 2 (GPL-2.0)
  */
@@ -32,13 +32,11 @@ require_once(DIR_WS_LANGUAGES . $_SESSION['language'] . '/modules/payment/barzah
 
 $ipn = new BZ_Ipn;
 
-if($ipn->sendResponseHeader($data)) {
-  header("HTTP/1.1 200 OK");
-  header("Status: 200 OK");
-  $ipn->updateDatabase();
+if ($ipn->sendResponseHeader($data)) {
+    header("HTTP/1.1 200 OK");
+    header("Status: 200 OK");
+    $ipn->updateDatabase();
+} else {
+    header("HTTP/1.1 400 Bad Request");
+    header("Status: 400 Bad Request");
 }
-else {
-  header("HTTP/1.1 400 Bad Request");
-  header("Status: 400 Bad Request");
-}
-?>
