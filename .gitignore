@@ -1,1 +1,5 @@
 .DS_Store
+cache.properties
+/build/*
+/src/logs/*
+/src/includes/modules/payment/barzahlen/barzahlen.log
