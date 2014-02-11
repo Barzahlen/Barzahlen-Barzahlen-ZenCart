@@ -36,9 +36,9 @@ class barzahlen {
   function barzahlen() {
 
     $this->code = 'barzahlen';
-    $this->version = '1.1.4';
+    $this->version = '1.1.5';
     $this->title = MODULE_PAYMENT_BARZAHLEN_TEXT_TITLE;
-    $this->description = '<div align="center">' . zen_image('http://cdn.barzahlen.de/images/barzahlen_logo.png', MODULE_PAYMENT_BARZAHLEN_TEXT_TITLE) . '</div><br>' . MODULE_PAYMENT_BARZAHLEN_TEXT_DESCRIPTION;
+    $this->description = '<div align="center">' . zen_image('https://cdn.barzahlen.de/images/barzahlen_logo.png', MODULE_PAYMENT_BARZAHLEN_TEXT_TITLE) . '</div><br>' . MODULE_PAYMENT_BARZAHLEN_TEXT_DESCRIPTION;
     $this->sort_order = MODULE_PAYMENT_BARZAHLEN_SORT_ORDER;
     $this->enabled = (MODULE_PAYMENT_BARZAHLEN_STATUS == 'True') ? true : false;
     $this->defaultCurrency = 'EUR';
@@ -83,7 +83,7 @@ class barzahlen {
 
     if($order->info['total'] < MODULE_PAYMENT_BARZAHLEN_MAXORDERTOTAL && in_array($order->info['currency'], $this->currencies)) {
       $title = $this->title;
-      $description = str_replace('{{image}}', zen_image('http://cdn.barzahlen.de/images/barzahlen_logo.png'), MODULE_PAYMENT_BARZAHLEN_TEXT_FRONTEND_DESCRIPTION);
+      $description = str_replace('{{image}}', zen_image('https://cdn.barzahlen.de/images/barzahlen_logo.png'), MODULE_PAYMENT_BARZAHLEN_TEXT_FRONTEND_DESCRIPTION);
 
       if(MODULE_PAYMENT_BARZAHLEN_SANDBOX == 'True') {
         $title .= ' [SANDBOX]';
@@ -94,7 +94,7 @@ class barzahlen {
 
       for($i = 1; $i <= 10; $i++) {
         $count = str_pad($i,2,"0",STR_PAD_LEFT);
-        $description .= '<img src="http://cdn.barzahlen.de/images/barzahlen_partner_'.$count.'.png" alt="" style="vertical-align: middle; height: 25px;" />';
+        $description .= '<img src="https://cdn.barzahlen.de/images/barzahlen_partner_'.$count.'.png" alt="" style="vertical-align: middle; height: 25px;" />';
       }
 
       return array('id' => $this->code , 'module' => $title , 'fields' => array(array('field' => $description)));
