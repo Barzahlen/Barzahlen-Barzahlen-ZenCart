@@ -184,27 +184,6 @@ class ModelIpnTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test valid expired notification with an invalid currency.
-     */
-    public function testValidExpiredWithAnInvalidCurrency()
-    {
-        $_GET = array('state' => 'expired',
-            'transaction_id' => '6382649',
-            'shop_id' => '10003',
-            'customer_email' => 'foo@bar.com',
-            'amount' => '122.07',
-            'currency' => 'EURO',
-            'order_id' => '4',
-            'custom_var_0' => '',
-            'custom_var_1' => '',
-            'custom_var_2' => '',
-            'hash' => 'a2968f79e808a8a68dc9f6d65f254a14f683d217fd2511bb30378763e37d66d3566da9f6acc4320ae7bcebd378d441a98e10537e7f9024616bb077497e3c2a0e'
-        );
-
-        $this->assertFalse($this->object->sendResponseHeader($_GET));
-    }
-
-    /**
      * Test invalid paid notification against a pending transaction. (corrupt hash)
      */
     public function testInvalidPaidAgainstPending()
@@ -223,32 +202,6 @@ class ModelIpnTest extends PHPUnit_Framework_TestCase
         );
 
         $this->assertFalse($this->object->sendResponseHeader($_GET));
-    }
-
-    /**
-     * Test invalid paid notification against a pending transaction. (wrong amount)
-     */
-    public function testInvalidAmountAgainstPending()
-    {
-        $_GET = array('state' => 'paid',
-            'transaction_id' => '6382214',
-            'shop_id' => '10003',
-            'customer_email' => 'foo@bar.com',
-            'amount' => '13.37',
-            'currency' => 'EUR',
-            'order_id' => '1',
-            'custom_var_0' => '',
-            'custom_var_1' => '',
-            'custom_var_2' => '',
-            'hash' => '65bf4a949f8c8a345800cccf757b2e981fb2a491d26d1754c834f80d1134c48fd5c3ed5f5d8a3c7c592833c7a1e23821b68ecec81c891291cf116bef52214dac'
-        );
-
-        $this->assertTrue($this->object->sendResponseHeader($_GET));
-        $this->object->updateDatabase();
-
-        $query = mysql_query("SELECT * FROM " . TABLE_ORDERS . " WHERE barzahlen_transaction_id = '6382214'");
-        $result = mysql_fetch_array($query, MYSQL_ASSOC);
-        $this->assertEquals('pending', $result['barzahlen_transaction_state']);
     }
 
     /**

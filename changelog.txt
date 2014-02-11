@@ -1,3 +1,7 @@
+==1.1.7 (17.05.2013)==
+* automatic plugin version check once a week
+* small improvements for notification process
+
 ==1.1.6 (17.04.2013)==
 * rounding amounts to avoid problems with float
 * only showing Barzahlen as payment method to German customers

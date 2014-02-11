@@ -55,7 +55,7 @@ class barzahlen
     function barzahlen()
     {
         $this->code = 'barzahlen';
-        $this->version = '1.1.6';
+        $this->version = '1.1.7';
         $this->title = MODULE_PAYMENT_BARZAHLEN_TEXT_TITLE;
         $this->description = '<div align="center">' . zen_image('https://cdn.barzahlen.de/images/barzahlen_logo.png', MODULE_PAYMENT_BARZAHLEN_TEXT_TITLE) . '</div><br>' . MODULE_PAYMENT_BARZAHLEN_TEXT_DESCRIPTION;
         $this->sort_order = MODULE_PAYMENT_BARZAHLEN_SORT_ORDER;

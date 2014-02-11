@@ -18,27 +18,29 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
  * @copyright   Copyright (c) 2013 Zerebro Internet GmbH (http://www.barzahlen.de)
- * @author      Alexander Diebler
+ * @author      Mathias Hertlein
  * @license     http://opensource.org/licenses/GPL-2.0  GNU General Public License, version 2 (GPL-2.0)
  */
 
-// catch $_GET content and unset $_GET to avoid abortion by application_top.php (hash, currency)
-$data = $_GET;
-unset($_GET);
+/**
+ * Hash creation for Barzahlen params
+ */
+class BarzahlenHashCreate
+{
+    const SEPERATOR = ";";
+    const HASH_ALGORITHM = "sha512";
 
-require_once("includes/application_top.php");
-require_once(DIR_WS_MODULES . "payment/barzahlen/model.ipn.php");
-global $db;
-$query = $db->Execute("SELECT directory FROM " . TABLE_LANGUAGES . " WHERE code = '" . DEFAULT_LANGUAGE . "'");
-require_once(DIR_WS_LANGUAGES . $query->fields['directory'] . '/modules/payment/barzahlen.php');
-
-$ipn = new BZ_Ipn;
-
-if ($ipn->sendResponseHeader($data)) {
-    header("HTTP/1.1 200 OK");
-    header("Status: 200 OK");
-    $ipn->updateDatabase();
-} else {
-    header("HTTP/1.1 400 Bad Request");
-    header("Status: 400 Bad Request");
+    /**
+     * Creates Hash
+     *
+     * @param array $array
+     * @param string $key
+     * @return string
+     */
+    public function getHash($array, $key)
+    {
+        $array[] = $key;
+        $hash = implode(self::SEPERATOR, $array);
+        return hash(self::HASH_ALGORITHM, $hash);
+    }
 }

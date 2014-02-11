@@ -25,6 +25,7 @@
 // Backend Information
 define('MODULE_PAYMENT_BARZAHLEN_TEXT_TITLE', 'Barzahlen');
 define('MODULE_PAYMENT_BARZAHLEN_TEXT_DESCRIPTION', 'Barzahlen bietet Ihren Kunden die M&ouml;glichkeit, online bar zu bezahlen. Sie werden in Echtzeit &uuml;ber die Zahlung benachrichtigt und profitieren von voller Zahlungsgarantie und neuen Kundengruppen. Sehen Sie wie Barzahlen funktioniert: <a href="http://www.barzahlen.de/partner/funktionsweise" style="color: #63A924;" target="_blank">http://www.barzahlen.de/partner/funktionsweise</a><br/><br/>');
+define('MODULE_PAYMENT_BARZAHLEN_NEW_VERSION',  'Barzahlen Update: %s! Verf&uuml;gbar auf <a href="http://www.barzahlen.de/partner/integration/shopsysteme/8/zen-cart">Barzahlen.de</a>');
 
 // Configuration Titles & Descriptions
 define('MODULE_PAYMENT_BARZAHLEN_STATUS_TITLE', 'Barzahlen Modul aktivieren');
