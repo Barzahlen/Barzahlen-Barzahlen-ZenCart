@@ -24,11 +24,8 @@
 
 class BZ_Notification {
 
-  var $notficationData = array('state','transaction_id','shop_id','customer_email','amount',
-                               'currency','order_id','custom_var_0','custom_var_1',
-                               'custom_var_2','hash'); //!< all necessary attributes for a valid notification
-
-  var $intData = array('transaction_id','order_id'); //!< numeric values for database queries
+  var $requiredAttributes = array('state','transaction_id','shop_id','customer_email','amount',
+                                  'currency','hash'); //!< all necessary attributes for a valid notification
 
   /**
    * Checks the received data step by step.
@@ -39,34 +36,14 @@ class BZ_Notification {
    */
   function checkReceivedData(array $receivedGet) {
 
-    if(!$this->checkExistenceForAllAttributes($receivedGet) || !$this->checkNumericData($receivedGet)) {
+    if(!$this->checkExistenceForAllAttributes($receivedGet)) {
       return false;
     }
 
-    if(!preg_match('/^(1000(\.00?)?|\d{1,3}(\.\d\d?)?)$/', $receivedGet['amount'])) {
-        $this->_bzLog('model/notification: Amount is no valid value - ' . serialize($receivedGet));
+    if(!$this->checkAttributeValues($receivedGet)) {
       return false;
     }
 
-    return true;
-  }
-
-  /**
-   * Checks that all numeric attributes which are used for database queries are clean.
-   *
-   * @param array $receivedGet received notificiation array
-   * @return FALSE if at least one attribute is not numeric
-   * @return TRUE if all attributes are numeric
-   */
-  function checkNumericData(array $receivedGet) {
-
-    foreach($this->intData as $attribute) {
-      if(!preg_match('/^\d+$/', $receivedGet[$attribute]) && array_key_exists($attribute, $receivedGet)) {
-        $this->_bzLog('model/notification: At least the following attribute is no numeric value: ' .
-                      $attribute . ' - ' . serialize($receivedGet));
-        return false;
-      }
-    }
     return true;
   }
 
@@ -80,13 +57,40 @@ class BZ_Notification {
    */
   function checkExistenceForAllAttributes(array $receivedGet) {
 
-    foreach($this->notficationData as $attribute) {
+    foreach($this->requiredAttributes as $attribute) {
       if(!array_key_exists($attribute, $receivedGet)) {
         $this->_bzLog('model/notification: At least the following attribute is missing: ' .
                       $attribute . ' - ' . serialize($receivedGet));
         return false;
       }
     }
+    return true;
+  }
+
+  /**
+   * Checks that all attribute values are valid.
+   *
+   * @param array $receivedGet array that should be tested
+   * @return FALSE if at least one attribute is missing
+   * @return TRUE if all attributes are set
+   */
+  function checkAttributeValues(array $receivedGet) {
+
+    if(!preg_match('/^\d+$/', $receivedGet['transaction_id'])) {
+      $this->_bzLog('model/notification: Transaction id is no valid value - ' . serialize($receivedGet));
+      return false;
+    }
+
+    if(array_key_exists('order_id', $receivedGet) && !preg_match('/^\d+$/', $receivedGet['order_id'])) {
+      $this->_bzLog('model/notification: Order id is no valid value - ' . serialize($receivedGet));
+      return false;
+    }
+
+    if($receivedGet['currency'] != substr($receivedGet['currency'], 0, 3)) {
+      $this->_bzLog('model/notification: Currency is no valid value - ' . serialize($receivedGet));
+      return false;
+    }
+
     return true;
   }
 
@@ -98,7 +102,7 @@ class BZ_Notification {
   function _bzLog($message) {
 
     $time = date("[Y-m-d H:i:s] ");
-    $logFile = DIR_WS_MODULES . 'payment/barzahlen/barzahlen.log';
+    $logFile = DIR_WS_CATALOG . 'logs/barzahlen.log';
 
     error_log($time . $message . "\r", 3, $logFile);
   }

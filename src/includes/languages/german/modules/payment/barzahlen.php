@@ -34,17 +34,15 @@ define('MODULE_PAYMENT_BARZAHLEN_ALLOWED_DESC', 'Geben Sie <strong>einzeln</stro
 define('MODULE_PAYMENT_BARZAHLEN_SANDBOX_TITLE', 'Testmodus aktivieren');
 define('MODULE_PAYMENT_BARZAHLEN_SANDBOX_DESC', 'Aktivieren Sie den Testmodus um Zahlungen &uuml;ber die Sandbox abzuwickeln.');
 define('MODULE_PAYMENT_BARZAHLEN_SHOPID_TITLE', 'Shop ID');
-define('MODULE_PAYMENT_BARZAHLEN_SHOPID_DESC', 'Ihre Barzahlen Shop ID (<a href="https://www.barzahlen.de/merchant-area/" style="color: #63A924;" target="_blank">https://www.barzahlen.de/merchant-area/</a>)');
+define('MODULE_PAYMENT_BARZAHLEN_SHOPID_DESC', 'Ihre Barzahlen Shop ID (<a href="https://partner.barzahlen.de" style="color: #63A924;" target="_blank">https://partner.barzahlen.de</a>)');
 define('MODULE_PAYMENT_BARZAHLEN_PAYMENTKEY_TITLE', 'Zahlungsschl&uuml;ssel');
-define('MODULE_PAYMENT_BARZAHLEN_PAYMENTKEY_DESC', 'Ihr Barzahlen Zahlungssch&uuml;ssel (<a href="https://www.barzahlen.de/merchant-area/" style="color: #63A924;" target="_blank">https://www.barzahlen.de/merchant-area/</a>)');
+define('MODULE_PAYMENT_BARZAHLEN_PAYMENTKEY_DESC', 'Ihr Barzahlen Zahlungssch&uuml;ssel (<a href="https://partner.barzahlen.de" style="color: #63A924;" target="_blank">https://partner.barzahlen.de</a>)');
 define('MODULE_PAYMENT_BARZAHLEN_NOTIFICATIONKEY_TITLE', 'Benachrichtigungsschl&uuml;ssel');
-define('MODULE_PAYMENT_BARZAHLEN_NOTIFICATIONKEY_DESC', 'Ihr Barzahlen Benachrichtigungsschl&uuml;ssel (<a href="https://www.barzahlen.de/merchant-area/" style="color: #63A924;" target="_blank">https://www.barzahlen.de/merchant-area/</a>)');
+define('MODULE_PAYMENT_BARZAHLEN_NOTIFICATIONKEY_DESC', 'Ihr Barzahlen Benachrichtigungsschl&uuml;ssel (<a href="https://partner.barzahlen.de" style="color: #63A924;" target="_blank">https://partner.barzahlen.de</a>)');
 define('MODULE_PAYMENT_BARZAHLEN_MAXORDERTOTAL_TITLE', 'Maximale Bestellsumme');
-define('MODULE_PAYMENT_BARZAHLEN_MAXORDERTOTAL_DESC', 'Welcher Warenwert darf h&ouml;chstens erreicht werden, damit Barzahlen als Zahlungsweise angeboten wird? (Max. 1000 EUR)');
+define('MODULE_PAYMENT_BARZAHLEN_MAXORDERTOTAL_DESC', 'Welcher Warenwert darf h&ouml;chstens erreicht werden, damit Barzahlen als Zahlungsweise angeboten wird? (Max. 999.99 EUR)');
 define('MODULE_PAYMENT_BARZAHLEN_DEBUG_TITLE', 'Erweitertes Logging');
 define('MODULE_PAYMENT_BARZAHLEN_DEBUG_DESC', 'Aktivieren Sie Debugging f&uuml;r zus&auml;tzliches Logging.');
-define('MODULE_PAYMENT_BARZAHLEN_TMP_STATUS_TITLE', 'Status f&uuml;r tempor&auml;re Bestellungen');
-define('MODULE_PAYMENT_BARZAHLEN_TMP_STATUS_DESC', 'Geben Sie den Status an, welcher tempor&auml;re Bestellungen zugewiesen werden soll.');
 define('MODULE_PAYMENT_BARZAHLEN_NEW_STATUS_TITLE', 'Status f&uuml;r unbezahlte Bestellungen');
 define('MODULE_PAYMENT_BARZAHLEN_NEW_STATUS_DESC', 'Geben Sie den Status an, welcher unbezahlten Bestellungen zugewiesen werden soll.');
 define('MODULE_PAYMENT_BARZAHLEN_PAID_STATUS_TITLE', 'Status f&uuml;r bezahlte Bestellungen');
@@ -55,14 +53,12 @@ define('MODULE_PAYMENT_BARZAHLEN_SORT_ORDER_TITLE', 'Anzeigereihenfolge');
 define('MODULE_PAYMENT_BARZAHLEN_SORT_ORDER_DESC', 'Reihenfolge der Anzeige. Kleinste Ziffer wird zuerst angezeigt.');
 
 // Frontend Texts
-define('MODULE_PAYMENT_BARZAHLEN_TEXT_FRONTEND_DESCRIPTION', '<br/> {{image}} <br/><br/> Mit Abschluss der Bestellung erhalten Sie einen Zahlschein, den Sie sich ausdrucken oder auf Ihr Handy schicken lassen k&ouml;nnen. Bezahlen Sie den Online-Einkauf mit Hilfe des Zahlscheins in einem Barzahlen-Partnergesch&auml;ft in Ihrer N&auml;he. Den n&auml;chsten Barzahlen-Partner finden Sie auf <a href="http://www.barzahlen.de/filialfinder" style="color: #63A924;" target="_blank">http://www.barzahlen.de/filialfinder</a>.');
+define('MODULE_PAYMENT_BARZAHLEN_TEXT_FRONTEND_DESCRIPTION', '<br/> {{image}} <br/><br/> Mit Abschluss der Bestellung erhalten Sie einen Zahlschein, den Sie sich ausdrucken oder auf Ihr Handy schicken lassen k&ouml;nnen. Bezahlen Sie den Online-Einkauf mit Hilfe des Zahlscheins in einem Barzahlen-Partnergesch&auml;ft in Ihrer N&auml;he.');
 define('MODULE_PAYMENT_BARZAHLEN_TEXT_FRONTEND_PARTNER', '<br/><br/> <strong>Eine Auswahl unserer Partner:</strong><br/>');
 define('MODULE_PAYMENT_BARZAHLEN_TEXT_FRONTEND_SANDBOX', '<br/><br/> Der <strong>Sandbox Modus</strong> ist aktiv. Allen get&auml;tigten Zahlungen wird ein Test-Zahlschein zugewiesen. Dieser kann nicht von unseren Einzelhandelspartnern verarbeitet werden.');
 define('MODULE_PAYMENT_BARZAHLEN_TEXT_FRONTEND_SUCCESS_TITLE', 'Einfach und sicher online bezahlen');
 define('MODULE_PAYMENT_BARZAHLEN_TEXT_ERROR', 'Transaktionsfehler');
 define('MODULE_PAYMENT_BARZAHLEN_TEXT_PAYMENT_ERROR', 'Es gab einen Fehler bei der Datenübertragung. Bitte versuchen Sie es erneut oder wählen Sie eine andere Zahlungsmethode.');
-define('MODULE_PAYMENT_BARZAHLEN_TEXT_FIRST_ATTEMPT_FAILED', 'Barzahlen: 1. Anforderung Zahlschein erfolglos - erneuter Versuch');
-define('MODULE_PAYMENT_BARZAHLEN_TEXT_SECOND_ATTEMPT_FAILED', 'Barzahlen: 2. Anforderung Zahlschein erfolglos - storniere Bestellung');
 define('MODULE_PAYMENT_BARZAHLEN_TEXT_X_ATTEMPT_SUCCESS', 'Barzahlen: Zahlschein erfolgreich angefordert und versendet');
 define('MODULE_PAYMENT_BARZAHLEN_TEXT_TRANSACTION_PAID', 'Barzahlen: Der Zahlschein wurde beim Offline-Partner bezahlt.');
 define('MODULE_PAYMENT_BARZAHLEN_TEXT_TRANSACTION_EXPIRED', 'Barzahlen: Der Zahlungszeitraum des Zahlscheins ist abgelaufen.');

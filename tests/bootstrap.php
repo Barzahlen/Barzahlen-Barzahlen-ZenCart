@@ -30,7 +30,7 @@ define('DEFAULT_LANGUAGE', 'de');
 
 define('DIR_WS_MODULES', 'src/includes/modules/');
 define('DIR_WS_LANGUAGES', 'includes/languages/');
-define('DIR_FS_CATALOG', 'src/');
+define('DIR_WS_CATALOG', 'src/');
 define('FILENAME_MODULES', '');
 define('FILENAME_CHECKOUT_PAYMENT', '');
 define('DB_PREFIX', '');

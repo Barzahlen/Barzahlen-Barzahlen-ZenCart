@@ -55,7 +55,6 @@ class ModuleBarzahlenTest extends PHPUnit_Framework_TestCase {
     $this->assertFalse($this->object->pre_confirmation_check());
     $this->assertFalse($this->object->confirmation());
     $this->assertFalse($this->object->process_button());
-    $this->assertFalse($this->object->before_process());
     $this->assertFalse($this->object->output_error());
   }
 
@@ -113,7 +112,7 @@ class ModuleBarzahlenTest extends PHPUnit_Framework_TestCase {
    */
   public function testSelectionWithTooHighAmount() {
     global $order;
-    $order->info['total'] = 1100;
+    $order->info['total'] = 1000;
     $this->assertFalse($this->object->selection());
   }
 
@@ -134,11 +133,11 @@ class ModuleBarzahlenTest extends PHPUnit_Framework_TestCase {
             </response>';
 
     $this->object = $this->getMock('barzahlen', array('_sendTransArray'));
-    $this->object->expects($this->once())
+    $this->object->expects($this->any())
                  ->method('_sendTransArray')
                  ->will($this->returnValue($xml));
 
-    $this->object->after_order_create(5);
+    $this->object->before_process(5);
     $this->assertTrue($_SESSION['payment_method_messages'] != '');
 
     $this->object->after_process();
@@ -171,7 +170,7 @@ class ModuleBarzahlenTest extends PHPUnit_Framework_TestCase {
                  ->method('_sendTransArray')
                  ->will($this->onConsecutiveCalls($xml1, $xml2));
 
-    $this->object->after_order_create(5);
+    $this->object->before_process(5);
     $this->assertTrue($_SESSION['payment_method_messages'] != '');
 
     $this->object->after_process();
@@ -181,9 +180,6 @@ class ModuleBarzahlenTest extends PHPUnit_Framework_TestCase {
    * Tests payment action with invalid hash.
    */
   public function testPaymentActionWithInvalidHash() {
-
-    $_SESSION['infotext-1'] = 'Random infotext from further transaction.';
-    $_SESSION['infotext-2'] = 'Random infotext from further transaction.';
 
     $xml = '<?xml version="1.0" encoding="UTF-8"?>
             <response>
@@ -201,7 +197,7 @@ class ModuleBarzahlenTest extends PHPUnit_Framework_TestCase {
                  ->method('_sendTransArray')
                  ->will($this->returnValue($xml));
 
-    $this->object->after_order_create(5);
+    $this->object->before_process(5);
     $this->assertTrue(!isset($_SESSION['payment_method_messages']));
 
     $this->object->get_error();
@@ -219,7 +215,7 @@ class ModuleBarzahlenTest extends PHPUnit_Framework_TestCase {
               <result>0</result>
             </response>';
 
-    $this->assertEquals(null, $this->object->_getResponseData($xml));
+    $this->assertEquals(null, $this->object->_getResponseData('create', $xml));
   }
 
   /**

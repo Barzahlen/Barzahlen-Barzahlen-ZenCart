@@ -34,17 +34,15 @@ define('MODULE_PAYMENT_BARZAHLEN_ALLOWED_DESC', 'Please enter the zones <strong>
 define('MODULE_PAYMENT_BARZAHLEN_SANDBOX_TITLE', 'Enable Sandbox Mode');
 define('MODULE_PAYMENT_BARZAHLEN_SANDBOX_DESC', 'Activate the test mode to process Barzahlen payments via sandbox.');
 define('MODULE_PAYMENT_BARZAHLEN_SHOPID_TITLE', 'Shop ID');
-define('MODULE_PAYMENT_BARZAHLEN_SHOPID_DESC', 'Your Barzahlen Shop ID (<a href="https://www.barzahlen.de/merchant-area/" style="color: #63A924;" target="_blank">https://www.barzahlen.de/merchant-area/</a>)');
+define('MODULE_PAYMENT_BARZAHLEN_SHOPID_DESC', 'Your Barzahlen Shop ID (<a href="https://partner.barzahlen.de" style="color: #63A924;" target="_blank">https://partner.barzahlen.de</a>)');
 define('MODULE_PAYMENT_BARZAHLEN_PAYMENTKEY_TITLE', 'Payment Key');
-define('MODULE_PAYMENT_BARZAHLEN_PAYMENTKEY_DESC', 'Your Barzahlen Payment Key (<a href="https://www.barzahlen.de/merchant-area/" style="color: #63A924;" target="_blank">https://www.barzahlen.de/merchant-area/</a>)');
+define('MODULE_PAYMENT_BARZAHLEN_PAYMENTKEY_DESC', 'Your Barzahlen Payment Key (<a href="https://partner.barzahlen.de" style="color: #63A924;" target="_blank">https://partner.barzahlen.de</a>)');
 define('MODULE_PAYMENT_BARZAHLEN_NOTIFICATIONKEY_TITLE', 'Notification Key');
-define('MODULE_PAYMENT_BARZAHLEN_NOTIFICATIONKEY_DESC', 'Notification Key (<a href="https://www.barzahlen.de/merchant-area/" style="color: #63A924;" target="_blank">https://www.barzahlen.de/merchant-area/</a>)');
+define('MODULE_PAYMENT_BARZAHLEN_NOTIFICATIONKEY_DESC', 'Your Notification Key (<a href="https://partner.barzahlen.de" style="color: #63A924;" target="_blank">https://partner.barzahlen.de</a>)');
 define('MODULE_PAYMENT_BARZAHLEN_MAXORDERTOTAL_TITLE', 'Maximum Order Amount');
-define('MODULE_PAYMENT_BARZAHLEN_MAXORDERTOTAL_DESC', 'Which is the highest cart amount to order with Barzahlen? (Max. 1000 EUR)');
+define('MODULE_PAYMENT_BARZAHLEN_MAXORDERTOTAL_DESC', 'Which is the highest cart amount to order with Barzahlen? (Max. 999.99 EUR)');
 define('MODULE_PAYMENT_BARZAHLEN_DEBUG_TITLE', 'Extended Logging');
 define('MODULE_PAYMENT_BARZAHLEN_DEBUG_DESC', 'Activate debugging for additional logging.');
-define('MODULE_PAYMENT_BARZAHLEN_TMP_STATUS_TITLE', 'Status for temporary orders');
-define('MODULE_PAYMENT_BARZAHLEN_TMP_STATUS_DESC', 'Choose a state for temporary orders.');
 define('MODULE_PAYMENT_BARZAHLEN_NEW_STATUS_TITLE', 'Status for unpaid orders');
 define('MODULE_PAYMENT_BARZAHLEN_NEW_STATUS_DESC', 'Choose a state for unpaid orders.');
 define('MODULE_PAYMENT_BARZAHLEN_PAID_STATUS_TITLE', 'Status for paid orders');
@@ -55,14 +53,12 @@ define('MODULE_PAYMENT_BARZAHLEN_SORT_ORDER_TITLE', 'Sort order');
 define('MODULE_PAYMENT_BARZAHLEN_SORT_ORDER_DESC', 'Sort order of the view. Lowest numeral will be displayed first.');
 
 // Frontend Texts
-define('MODULE_PAYMENT_BARZAHLEN_TEXT_FRONTEND_DESCRIPTION', '<br/> {{image}} <br/><br/> After completing your order you get a payment slip from Barzahlen that you can easily print out or have it sent via SMS to your mobile phone. With the help of that payment slip you can pay your online purchase at one of our retail partners (e.g. supermarket). You can find the next Barzahlen partner at <a href="http://www.barzahlen.de/filialfinder" style="color: #63A924;" target="_blank">http://www.barzahlen.de/filialfinder</a>.');
+define('MODULE_PAYMENT_BARZAHLEN_TEXT_FRONTEND_DESCRIPTION', '<br/> {{image}} <br/><br/> After completing your order you get a payment slip from Barzahlen that you can easily print out or have it sent via SMS to your mobile phone. With the help of that payment slip you can pay your online purchase at one of our retail partners (e.g. supermarket).');
 define('MODULE_PAYMENT_BARZAHLEN_TEXT_FRONTEND_PARTNER', '<br/><br/> <strong>A selection of our partners:</strong><br/>');
 define('MODULE_PAYMENT_BARZAHLEN_TEXT_FRONTEND_SANDBOX', '<br/><br/> The <strong>Sandbox Mode</strong> is active. All placed orders receive a test payment slip. Test payment slips cannot be handled by our retail partners.');
-define('MODULE_PAYMENT_BARZAHLEN_TEXT_FRONTEND_SUCCESS_TITLE', 'Simple and secure online payment with cash');
+define('MODULE_PAYMENT_BARZAHLEN_TEXT_FRONTEND_SUCCESS_TITLE', 'Simple and secure online payment');
 define('MODULE_PAYMENT_BARZAHLEN_TEXT_ERROR', 'Transactionerror');
 define('MODULE_PAYMENT_BARZAHLEN_TEXT_PAYMENT_ERROR', '<p>Payment via Barzahlen was unfortunately not possible. Please try again or select another payment method.</p>');
-define('MODULE_PAYMENT_BARZAHLEN_TEXT_FIRST_ATTEMPT_FAILED', 'Barzahlen: 1. payment slip request failed - retry');
-define('MODULE_PAYMENT_BARZAHLEN_TEXT_SECOND_ATTEMPT_FAILED', 'Barzahlen: 2. payment slip request failed - abort');
 define('MODULE_PAYMENT_BARZAHLEN_TEXT_X_ATTEMPT_SUCCESS', 'Barzahlen: payment slip requested and sent successfully');
 define('MODULE_PAYMENT_BARZAHLEN_TEXT_TRANSACTION_PAID', 'Barzahlen: The payment slip was paid successfully.');
 define('MODULE_PAYMENT_BARZAHLEN_TEXT_TRANSACTION_EXPIRED', 'Barzahlen: The time frame for the payment slip expired.');

@@ -28,6 +28,7 @@ class barzahlen {
   const APIDOMAINSANDBOX = 'https://api-sandbox.barzahlen.de/v1/transactions/'; //!< sandbox call domain
   const HASHSEPARATOR = ';'; //!< hash separator for hash string
   const HASHALGORITHM = 'sha512'; //!< algorithm for hash generation
+  const MAXATTEMPTS = 2; //!< maximum connect attempts per request
 
   /**
    * Constructor class, sets the settings.
@@ -35,23 +36,17 @@ class barzahlen {
   function barzahlen() {
 
     $this->code = 'barzahlen';
-    $this->version = '1.0.0';
+    $this->version = '1.1.0';
     $this->title = MODULE_PAYMENT_BARZAHLEN_TEXT_TITLE;
     $this->description = '<div align="center">' . zen_image('http://cdn.barzahlen.de/images/barzahlen_logo.png', MODULE_PAYMENT_BARZAHLEN_TEXT_TITLE) . '</div><br>' . MODULE_PAYMENT_BARZAHLEN_TEXT_DESCRIPTION;
     $this->sort_order = MODULE_PAYMENT_BARZAHLEN_SORT_ORDER;
     $this->enabled = (MODULE_PAYMENT_BARZAHLEN_STATUS == 'True') ? true : false;
-    $this->connectAttempts = 0;
-
-    if(MODULE_PAYMENT_BARZAHLEN_SANDBOX == 'False') {
-      $this->callDomain = self::APIDOMAIN.'create';
-    }
-    else {
-      $this->callDomain = self::APIDOMAINSANDBOX.'create';
-    }
+    $this->defaultCurrency = 'EUR';
 
     $this->cert = DIR_WS_MODULES . 'payment/barzahlen/ca-bundle.crt';
-    $this->logFile = DIR_WS_MODULES . 'payment/barzahlen/barzahlen.log';
+    $this->logFile = DIR_WS_CATALOG . 'logs/barzahlen.log';
     $this->currencies = array('EUR');
+    $this->connectAttempts = 0;
   }
 
   /**
@@ -80,9 +75,9 @@ class barzahlen {
   function selection() {
     global $order;
 
-    if(!preg_match('/^(1000(\.00?)?|\d{1,3}(\.\d\d?)?)$/', MODULE_PAYMENT_BARZAHLEN_MAXORDERTOTAL)) {
+    if(!preg_match('/^[0-9]{1,3}(\.[0-9][0-9]?)?$/', MODULE_PAYMENT_BARZAHLEN_MAXORDERTOTAL)) {
       $this->_bzLog('Maximum order amount ('.MODULE_PAYMENT_BARZAHLEN_MAXORDERTOTAL.') is not valid.'.
-                    ' Should be between 0.00 and 1000.00 Euros.');
+                    ' Should be between 0.00 and 999.99 Euros.');
       return false;
     }
 
@@ -137,75 +132,32 @@ class barzahlen {
   }
 
   /**
-   * Actions before core process. Not used in this module.
-   *
-   * @return false
-   */
-  function before_process() {
-    return false;
-  }
-
-  /**
    * Payment process between final confirmation and success page.
    */
-  function after_order_create($insert_id) {
-    global $db, $order, $messageStack;
+  function before_process() {
+    global $order, $messageStack;
 
-    // Increase connect attempts and build transaction array.
-    $this->connectAttempts++;
-    $TransArray = array();
-    $TransArray['shop_id'] = MODULE_PAYMENT_BARZAHLEN_SHOPID;
-    $TransArray['customer_email'] = $order->customer['email_address'];
-    $TransArray['amount'] = (string)round($order->info['total'], 2);
-    $TransArray['currency'] = $order->info['currency'];
-    $TransArray['language'] = $_SESSION['languages_code'];
-    $TransArray['order_id'] = $insert_id;
-    $TransArray['custom_var_0'] = '';
-    $TransArray['custom_var_1'] = '';
-    $TransArray['custom_var_2'] = '';
-    $TransArray['paymentkey'] = MODULE_PAYMENT_BARZAHLEN_PAYMENTKEY;
-    $TransArray['hash'] = $this->_getHash($TransArray);
-    unset($TransArray['paymentkey']);
+    $transData = array();
+    $transData['customer_email'] = $order->customer['email_address'];
+    $transData['amount'] = (string)round($order->info['total'], 2);
+    $transData['currency'] = $order->info['currency'];
+    $transData['language'] = $_SESSION['languages_code'];
+    $transData['order_id'] = '';
+    $transData['customer_street_nr'] = $order->customer['street_address'];
+    $transData['customer_zipcode'] = $order->customer['postcode'];
+    $transData['customer_city'] = $order->customer['city'];
+    $transData['customer_country'] = $order->customer['country']['iso_code_2'];
+    $transData['custom_var_0'] = '';
+    $transData['custom_var_1'] = '';
+    $transData['custom_var_2'] = '';
+    $transArray = $this->_buildTransArray($transData);
+    $xmlArray = $this->_connectToApi('create', $transArray);
 
-    // request and parse xml response from Barzahlen
-    $this->_bzDebug('Sending transaction array to server - '.serialize(array($this->callDomain, $TransArray)));
-    $xmlResponse = $this->_sendTransArray($TransArray);
-    $this->_bzDebug('Received xml response, parsing now - '.serialize($xmlResponse));
-    $xmlArray = $this->_getResponseData($xmlResponse);
-    $this->_bzDebug('Finished parsing, xml array ready - '.serialize($xmlArray));
-    $xmlData = array('payment-slip-link', 'infotext-1', 'infotext-2', 'expiration-notice');
-
-    // if there's a positive answer, set session variables and insert transaction into databaste
     if($xmlArray != null) {
-
+      $_SESSION['transaction-id'] = $xmlArray['transaction-id'];
       $this->_setPaymentMethodMessage($xmlArray);
-
-      $db->Execute (
-        "UPDATE ". TABLE_ORDERS ."
-         SET barzahlen_transaction_id = '".$xmlArray['transaction-id']."' ,
-             barzahlen_transaction_state = 'pending'
-         WHERE orders_id = '".$insert_id."'");
     }
-
-    // if request fails, check if a retry is possible
-    else if ($this->connectAttempts < 2) {
-      $db->Execute("UPDATE ". TABLE_ORDERS_STATUS_HISTORY ."
-                    SET comments = '". MODULE_PAYMENT_BARZAHLEN_TEXT_FIRST_ATTEMPT_FAILED ."'
-                    WHERE orders_id = '".$TransArray['order_id']."'");
-      $this->after_order_create($insert_id);
-    }
-
-    // if both attempts failed, cancel order and send user back to payment method selection
     else {
-      $db->Execute("UPDATE ". TABLE_ORDERS ."
-                    SET orders_status = '".MODULE_PAYMENT_BARZAHLEN_EXPIRED_STATUS."'
-                    WHERE orders_id = '".$TransArray['order_id']."'");
-      $db->Execute("INSERT INTO ". TABLE_ORDERS_STATUS_HISTORY ."
-                    (orders_id, orders_status_id, date_added, customer_notified, comments)
-                    VALUES
-                    ('".$TransArray['order_id']."', '".MODULE_PAYMENT_BARZAHLEN_EXPIRED_STATUS."',
-                    now(), '1', '". MODULE_PAYMENT_BARZAHLEN_TEXT_SECOND_ATTEMPT_FAILED ."')");
-
       $messageStack->add_session('checkout_payment', $this->_convertISO(MODULE_PAYMENT_BARZAHLEN_TEXT_PAYMENT_ERROR), 'error');
       zen_redirect(zen_href_link(FILENAME_CHECKOUT_PAYMENT, '', 'SSL', true, false));
     }
@@ -217,30 +169,31 @@ class barzahlen {
   function after_process() {
     global $db, $insert_id;
 
-    // update order status
+    // set transaction details
     $db->Execute("UPDATE ". TABLE_ORDERS ."
-                  SET orders_status = '".MODULE_PAYMENT_BARZAHLEN_NEW_STATUS."'
+                  SET barzahlen_transaction_id = '".(int)$_SESSION['transaction-id']."' ,
+                      barzahlen_transaction_state = 'pending',
+                      orders_status = '".MODULE_PAYMENT_BARZAHLEN_NEW_STATUS."'
                   WHERE orders_id = '".$insert_id."'");
 
-    // check if the last order history status has a comment
+    // select last order history comment for this order
     $query = $db->Execute("SELECT orders_status_history_id, comments FROM ". TABLE_ORDERS_STATUS_HISTORY ."
                            WHERE orders_id = '".$insert_id."'
                            ORDER BY orders_status_history_id DESC");
 
-    // set order status history with status for a new order and comment
-    if($query->fields['comments'] == '') {
-      $db->Execute("UPDATE ". TABLE_ORDERS_STATUS_HISTORY ."
-                    SET orders_status_id = '".MODULE_PAYMENT_BARZAHLEN_NEW_STATUS."',
-                        comments = '". MODULE_PAYMENT_BARZAHLEN_TEXT_X_ATTEMPT_SUCCESS ."'
-                    WHERE orders_status_history_id = '".$query->fields['orders_status_history_id']."'");
-    }
-    else {
-      $db->Execute("INSERT INTO ". TABLE_ORDERS_STATUS_HISTORY ."
-                    (orders_id, orders_status_id, date_added, customer_notified, comments)
-                    VALUES
-                    ('".$insert_id."', '".MODULE_PAYMENT_BARZAHLEN_NEW_STATUS."',
-                    now(), '1', '". MODULE_PAYMENT_BARZAHLEN_TEXT_X_ATTEMPT_SUCCESS ."')");
-    }
+    // insert create success comment
+    $db->Execute("UPDATE ". TABLE_ORDERS_STATUS_HISTORY ."
+                  SET orders_status_id = '".MODULE_PAYMENT_BARZAHLEN_NEW_STATUS."',
+                      comments = '". MODULE_PAYMENT_BARZAHLEN_TEXT_X_ATTEMPT_SUCCESS ."'
+                  WHERE orders_status_history_id = '".$query->fields['orders_status_history_id']."'");
+
+    // send corresponding order id
+    $transData = array();
+    $transData['transaction_id'] = $_SESSION['transaction-id'];
+    $transData['order_id'] = $insert_id;
+    $transArray = $this->_buildTransArray($transData);
+    $this->_connectToApi('update', $transArray);
+    unset($_SESSION['transaction-id']);
   }
 
   /**
@@ -303,7 +256,7 @@ class barzahlen {
       ('".MODULE_PAYMENT_BARZAHLEN_SHOPID_TITLE."', 'MODULE_PAYMENT_BARZAHLEN_SHOPID', '', '".MODULE_PAYMENT_BARZAHLEN_SHOPID_DESC."', '6', '3', now()),
       ('".MODULE_PAYMENT_BARZAHLEN_PAYMENTKEY_TITLE."', 'MODULE_PAYMENT_BARZAHLEN_PAYMENTKEY', '', '".MODULE_PAYMENT_BARZAHLEN_PAYMENTKEY_DESC."', '6', '4', now()),
       ('".MODULE_PAYMENT_BARZAHLEN_NOTIFICATIONKEY_TITLE."', 'MODULE_PAYMENT_BARZAHLEN_NOTIFICATIONKEY', '', '".MODULE_PAYMENT_BARZAHLEN_NOTIFICATIONKEY_DESC."', '6', '5', now()),
-      ('".MODULE_PAYMENT_BARZAHLEN_MAXORDERTOTAL_TITLE."', 'MODULE_PAYMENT_BARZAHLEN_MAXORDERTOTAL', '1000', '".MODULE_PAYMENT_BARZAHLEN_MAXORDERTOTAL_DESC."', '6', '6', now()),
+      ('".MODULE_PAYMENT_BARZAHLEN_MAXORDERTOTAL_TITLE."', 'MODULE_PAYMENT_BARZAHLEN_MAXORDERTOTAL', '999.99', '".MODULE_PAYMENT_BARZAHLEN_MAXORDERTOTAL_DESC."', '6', '6', now()),
       ('".MODULE_PAYMENT_BARZAHLEN_SORT_ORDER_TITLE."', 'MODULE_PAYMENT_BARZAHLEN_SORT_ORDER', '-1', '".MODULE_PAYMENT_BARZAHLEN_SORT_ORDER_DESC."', '6', '11', now())");
 
     $db->Execute(
@@ -365,29 +318,86 @@ class barzahlen {
   }
 
   /**
+   * Prepares the transaction array with shop id and hash. Removes empty entires.
+   *
+   * @param array $data request details data
+   * @return array with shop id and hash
+   */
+  function _buildTransArray(array $data) {
+
+    $transArray = array();
+    $transArray['shop_id'] = MODULE_PAYMENT_BARZAHLEN_SHOPID;
+
+    foreach($data as $key => $value) {
+      $transArray[$key] = $value;
+    }
+
+    $transArray['hash'] = $this->_getHash($transArray);
+
+    foreach($transArray as $key => $value) {
+      if($value == '') {
+        unset($transArray[$key]);
+      }
+    }
+
+    return $transArray;
+  }
+
+  /**
    * Generates the sha512 hash out of the transaction array.
    *
    * @param array $array transaction array
    * @return sha512 hash
    */
   function _getHash(array $array) {
+    $array[] = MODULE_PAYMENT_BARZAHLEN_PAYMENTKEY;
     $HashString = implode(self::HASHSEPARATOR, $array);
     return hash(self::HASHALGORITHM, $HashString);
   }
 
   /**
+   * Prepares call domain and request sending.
+   *
+   * @param string $type request type ('create' or 'update')
+   * @param array $transArray transaction data for request
+   * @return null | array with xml response values
+   */
+  function _connectToApi($type, array $transArray) {
+
+    if(MODULE_PAYMENT_BARZAHLEN_SANDBOX == 'False') {
+      $this->callDomain = self::APIDOMAIN.$type;
+    }
+    else {
+      $this->callDomain = self::APIDOMAINSANDBOX.$type;
+    }
+
+    $this->connectAttempts++;
+    $this->_bzDebug('Sending transaction array to server - '.serialize(array($this->callDomain, $transArray)));
+    $xmlResponse = $this->_sendTransArray($transArray);
+    $this->_bzDebug('Received xml response, parsing now - '.serialize($xmlResponse));
+    $xmlArray = $this->_getResponseData($type, $xmlResponse);
+    $this->_bzDebug('Finished parsing, xml array ready - '.serialize($xmlArray));
+
+    if($xmlArray == null && $this->connectAttempts < self::MAXATTEMPTS) {
+      return $this->_connectToApi($type, $transArray);
+    }
+
+    return $xmlArray;
+  }
+
+  /**
    * Sends the build transaction array to the Barzahlen server.
    *
-   * @param array $TransArray build transaction array
-   * @return string with xml answer
-   * @return null, if an error occurred
+   * @param array $transArray build transaction array
+   * @return string with xml answer | null, if an error occurred
    */
-  function _sendTransArray(array $TransArray) {
+  function _sendTransArray(array $transArray) {
+
     try {
       $ch = curl_init();
       curl_setopt($ch, CURLOPT_URL, $this->callDomain);
-      curl_setopt($ch, CURLOPT_POST, count($TransArray));
-      curl_setopt($ch, CURLOPT_POSTFIELDS, $TransArray);
+      curl_setopt($ch, CURLOPT_POST, count($transArray));
+      curl_setopt($ch, CURLOPT_POSTFIELDS, $transArray);
       curl_setopt($ch, CURLOPT_HEADER, 0);
       curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
       curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
@@ -408,12 +418,20 @@ class barzahlen {
   /**
    * Extracts the data out of the xml answer and verfies them.
    *
+   * @param string $type request type ('create' or 'update')
    * @param string $xmlResponse received xml answer
-   * @return string with error-message, if an error occured
-   * @return null if data is not valid
-   * @return array with received and valid data
+   * @return null if an error occured | array with received and valid data
    */
-  function _getResponseData($xmlResponse) {
+  function _getResponseData($type, $xmlResponse) {
+
+    switch($type) {
+      case 'create':
+        $nodes = array('transaction-id', 'payment-slip-link', 'expiration-notice', 'infotext-1', 'infotext-2', 'result', 'hash');
+        break;
+      case 'update':
+        $nodes = array('transaction-id', 'result', 'hash');
+        break;
+    }
 
     try {
 
@@ -424,7 +442,6 @@ class barzahlen {
         return null;
       }
 
-      $nodes = array('transaction-id', 'payment-slip-link', 'expiration-notice', 'infotext-1', 'infotext-2', 'result', 'hash');
       $xmlArray = array();
       foreach ($nodes as $node) {
         $xmlArray[$node] = (string)$simpleXML->{$node};
@@ -453,7 +470,6 @@ class barzahlen {
 
     $responseHash = $xmlArray['hash'];
     unset($xmlArray['hash']);
-    $xmlArray['paymentkey'] = MODULE_PAYMENT_BARZAHLEN_PAYMENTKEY;
     $generatedHash = $this->_getHash($xmlArray);
 
     return $responseHash == $generatedHash;

@@ -72,25 +72,6 @@ class ModelNotificationTest extends PHPUnit_Framework_TestCase {
   }
 
   /**
-   * Check notification helper with invalid transaction array. (amount is too high)
-   */
-  public function testInvalidTransactionInput_Amount() {
-
-    $_GET = array('state' => 'paid',
-                  'transaction_id' => '600',
-                  'shop_id' => '32',
-                  'customer_email' => 'mail@domain.tld',
-                  'amount' => '4329',
-                  'currency' => 'EUR',
-                  'order_id' => '100003456',
-                  'custom_var_0' => 'cv0',
-                  'custom_var_1' => 'cv1',
-                  'custom_var_2' => 'cv2',
-                  'hash' => '704f06c85e9d12a62cc69084afc3cbcc3de5878ec595e0b0bc911552f278043d2441478072a217de954e3567d3b1765366378274c105eb5b2f7fabd6e58e620b');
-    $this->assertFalse($this->object->checkReceivedData($_GET));
-  }
-
-  /**
    * Check notification helper with invalid transaction array. (transaction_id array key is wrong)
    */
   public function testInvalidTransactionInput_ArrayKey() {

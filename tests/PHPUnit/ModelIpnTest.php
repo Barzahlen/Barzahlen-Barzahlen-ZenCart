@@ -166,7 +166,7 @@ class ModelIpnTest extends PHPUnit_Framework_TestCase {
   public function testValidExpiredAgainstNonExistingTransaction() {
 
     $_GET = array('state' => 'expired',
-                  'transaction_id' => '6382649',
+                  'transaction_id' => '6382640',
                   'shop_id' => '10003',
                   'customer_email' => 'foo@bar.com',
                   'amount' => '122.07',
@@ -175,11 +175,32 @@ class ModelIpnTest extends PHPUnit_Framework_TestCase {
                   'custom_var_0' => '',
                   'custom_var_1' => '',
                   'custom_var_2' => '',
-                  'hash' => '5d34daacac17e10dfe0ea217e761053d29272c8d04be5311c3b92d497c12b00c4cff14b9ead9c2f08396878893b782af44edbe668825b7a787c0f0f1b233fd68'
+                  'hash' => '578c7019ef08e3959d024b0d691c3ca08494dccac027e2342788639d3432bc93daa26e2acbb31b0dd24a92f6e7d7682625ba520d58e6d51e00858ff5c2fbffb5'
                  );
 
     $this->assertTrue($this->object->sendResponseHeader($_GET));
     $this->assertFalse($this->object->checkDatasets());
+  }
+
+  /**
+   * Test valid expired notification with an invalid currency.
+   */
+  public function testValidExpiredWithAnInvalidCurrency() {
+
+    $_GET = array('state' => 'expired',
+                  'transaction_id' => '6382649',
+                  'shop_id' => '10003',
+                  'customer_email' => 'foo@bar.com',
+                  'amount' => '122.07',
+                  'currency' => 'EURO',
+                  'order_id' => '4',
+                  'custom_var_0' => '',
+                  'custom_var_1' => '',
+                  'custom_var_2' => '',
+                  'hash' => 'a2968f79e808a8a68dc9f6d65f254a14f683d217fd2511bb30378763e37d66d3566da9f6acc4320ae7bcebd378d441a98e10537e7f9024616bb077497e3c2a0e'
+                 );
+
+    $this->assertFalse($this->object->sendResponseHeader($_GET));
   }
 
   /**
