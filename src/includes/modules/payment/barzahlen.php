@@ -36,7 +36,7 @@ class barzahlen {
   function barzahlen() {
 
     $this->code = 'barzahlen';
-    $this->version = '1.1.2';
+    $this->version = '1.1.3';
     $this->title = MODULE_PAYMENT_BARZAHLEN_TEXT_TITLE;
     $this->description = '<div align="center">' . zen_image('http://cdn.barzahlen.de/images/barzahlen_logo.png', MODULE_PAYMENT_BARZAHLEN_TEXT_TITLE) . '</div><br>' . MODULE_PAYMENT_BARZAHLEN_TEXT_DESCRIPTION;
     $this->sort_order = MODULE_PAYMENT_BARZAHLEN_SORT_ORDER;
@@ -94,7 +94,7 @@ class barzahlen {
 
       for($i = 1; $i <= 10; $i++) {
         $count = str_pad($i,2,"0",STR_PAD_LEFT);
-        $description .= '<img src="http://cdn.barzahlen.de/images/barzahlen_partner_'.$count.'.png" alt="" />';
+        $description .= '<img src="http://cdn.barzahlen.de/images/barzahlen_partner_'.$count.'.png" alt="" style="vertical-align: middle; height: 25px;" />';
       }
 
       return array('id' => $this->code , 'module' => $title , 'fields' => array(array('field' => $description)));
@@ -166,7 +166,7 @@ class barzahlen {
                            ORDER BY orders_status_history_id DESC");
 
     if($xmlArray != null) {
-      $this->_setPaymentMethodMessage($xmlArray);
+      $_SESSION['payment_method_messages'] = $xmlArray['infotext-1'];
 
       // set transaction details
       $db->Execute("UPDATE ". TABLE_ORDERS ."
@@ -477,41 +477,6 @@ class barzahlen {
     $generatedHash = $this->_getHash($xmlArray);
 
     return $responseHash == $generatedHash;
-  }
-
-  /**
-   * Sets the payment method message which will be shown at the checkout success page.
-   *
-   * @param array $xmlArray array with received xml data
-   */
-  function _setPaymentMethodMessage(array $xmlArray) {
-
-    $_SESSION['payment_method_messages'] =
-     '<iframe src="'.$xmlArray['payment-slip-link'].'" width="0" height="1" frameborder="0"></iframe>
-      <img src="http://cdn.barzahlen.de/images/barzahlen_logo.png" height="57" width="168" alt="" style="padding:0; margin:0; margin-bottom: 10px;"/>
-      <hr/>
-
-      <br/>
-      <div style="width:100%;">
-        <div style="position: relative; float: left; width: 180px; text-align: center;">
-          <a href="'.$xmlArray['payment-slip-link'].'" target="_blank" style="color: #63A924; text-decoration: none; font-size: 1.2em;">
-            <img src="http://cdn.barzahlen.de/images/barzahlen_checkout_success_payment_slip.png" height="192" width="126" alt="" style="margin-bottom: 5px;"/><br/>
-            <strong>Download PDF</strong>
-          </a>
-        </div>
-
-          <span style="font-weight: bold; color: #63A924; font-size: 1.5em;">'.MODULE_PAYMENT_BARZAHLEN_TEXT_FRONTEND_SUCCESS_TITLE.'</span>
-          <p>'.$xmlArray['infotext-1'].'</p>
-          <p>'.$xmlArray['expiration-notice'].'</p>
-          <div style="width:100%;">
-            <div style="position: relative; float: left; width: 50px;"><img src="http://cdn.barzahlen.de/images/barzahlen_mobile.png" height="52" width="41" alt="" style="float: left;"/></div>
-            <p>'.$xmlArray['infotext-2'].'</p>
-          </div>
-
-
-        <br style="clear:both;" /><br/>
-      </div>
-      <hr/><br/>';
   }
 
   /**

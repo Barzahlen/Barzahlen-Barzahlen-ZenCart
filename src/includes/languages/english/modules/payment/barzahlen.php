@@ -54,9 +54,8 @@ define('MODULE_PAYMENT_BARZAHLEN_SORT_ORDER_DESC', 'Sort order of the view. Lowe
 
 // Frontend Texts
 define('MODULE_PAYMENT_BARZAHLEN_TEXT_FRONTEND_DESCRIPTION', '<br/> {{image}} <br/><br/> After completing your order you get a payment slip from Barzahlen that you can easily print out or have it sent via SMS to your mobile phone. With the help of that payment slip you can pay your online purchase at one of our retail partners (e.g. supermarket).');
-define('MODULE_PAYMENT_BARZAHLEN_TEXT_FRONTEND_PARTNER', '<br/><br/> <strong>A selection of our partners:</strong><br/>');
+define('MODULE_PAYMENT_BARZAHLEN_TEXT_FRONTEND_PARTNER', '<br/><br/> <strong>Pay at:</strong>&nbsp;');
 define('MODULE_PAYMENT_BARZAHLEN_TEXT_FRONTEND_SANDBOX', '<br/><br/> The <strong>Sandbox Mode</strong> is active. All placed orders receive a test payment slip. Test payment slips cannot be handled by our retail partners.');
-define('MODULE_PAYMENT_BARZAHLEN_TEXT_FRONTEND_SUCCESS_TITLE', 'Simple and secure online payment');
 define('MODULE_PAYMENT_BARZAHLEN_TEXT_ERROR', 'Transactionerror');
 define('MODULE_PAYMENT_BARZAHLEN_TEXT_PAYMENT_ERROR', '<p>Payment via Barzahlen was unfortunately not possible. Please try again or select another payment method.</p>');
 define('MODULE_PAYMENT_BARZAHLEN_TEXT_X_ATTEMPT_SUCCESS', 'Barzahlen: payment slip requested and sent successfully');

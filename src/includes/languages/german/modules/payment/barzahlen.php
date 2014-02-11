@@ -53,10 +53,9 @@ define('MODULE_PAYMENT_BARZAHLEN_SORT_ORDER_TITLE', 'Anzeigereihenfolge');
 define('MODULE_PAYMENT_BARZAHLEN_SORT_ORDER_DESC', 'Reihenfolge der Anzeige. Kleinste Ziffer wird zuerst angezeigt.');
 
 // Frontend Texts
-define('MODULE_PAYMENT_BARZAHLEN_TEXT_FRONTEND_DESCRIPTION', '<br/> {{image}} <br/><br/> Mit Abschluss der Bestellung erhalten Sie einen Zahlschein, den Sie sich ausdrucken oder auf Ihr Handy schicken lassen k&ouml;nnen. Bezahlen Sie den Online-Einkauf mit Hilfe des Zahlscheins in einem Barzahlen-Partnergesch&auml;ft in Ihrer N&auml;he.');
-define('MODULE_PAYMENT_BARZAHLEN_TEXT_FRONTEND_PARTNER', '<br/><br/> <strong>Eine Auswahl unserer Partner:</strong><br/>');
+define('MODULE_PAYMENT_BARZAHLEN_TEXT_FRONTEND_DESCRIPTION', '<br/> {{image}} <br/><br/> Mit Abschluss der Bestellung bekommen Sie einen Zahlschein angezeigt, den Sie sich ausdrucken oder auf Ihr Handy schicken lassen k&ouml;nnen. Bezahlen Sie den Online-Einkauf mit Hilfe des Zahlscheins an der Kasse einer Barzahlen-Partnerfiliale.');
+define('MODULE_PAYMENT_BARZAHLEN_TEXT_FRONTEND_PARTNER', '<br/><br/> <strong>Bezahlen Sie bei:</strong>&nbsp;');
 define('MODULE_PAYMENT_BARZAHLEN_TEXT_FRONTEND_SANDBOX', '<br/><br/> Der <strong>Sandbox Modus</strong> ist aktiv. Allen get&auml;tigten Zahlungen wird ein Test-Zahlschein zugewiesen. Dieser kann nicht von unseren Einzelhandelspartnern verarbeitet werden.');
-define('MODULE_PAYMENT_BARZAHLEN_TEXT_FRONTEND_SUCCESS_TITLE', 'Einfach und sicher online bezahlen');
 define('MODULE_PAYMENT_BARZAHLEN_TEXT_ERROR', 'Transaktionsfehler');
 define('MODULE_PAYMENT_BARZAHLEN_TEXT_PAYMENT_ERROR', 'Es gab einen Fehler bei der Datenübertragung. Bitte versuchen Sie es erneut oder wählen Sie eine andere Zahlungsmethode.');
 define('MODULE_PAYMENT_BARZAHLEN_TEXT_X_ATTEMPT_SUCCESS', 'Barzahlen: Zahlschein erfolgreich angefordert und versendet');
