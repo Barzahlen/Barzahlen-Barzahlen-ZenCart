@@ -102,7 +102,7 @@ class BZ_Notification {
   function _bzLog($message) {
 
     $time = date("[Y-m-d H:i:s] ");
-    $logFile = DIR_WS_CATALOG . 'logs/barzahlen.log';
+    $logFile = DIR_FS_CATALOG . 'logs/barzahlen.log';
 
     error_log($time . $message . "\r", 3, $logFile);
   }

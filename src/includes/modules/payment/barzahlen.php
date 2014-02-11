@@ -36,7 +36,7 @@ class barzahlen {
   function barzahlen() {
 
     $this->code = 'barzahlen';
-    $this->version = '1.1.0';
+    $this->version = '1.1.1';
     $this->title = MODULE_PAYMENT_BARZAHLEN_TEXT_TITLE;
     $this->description = '<div align="center">' . zen_image('http://cdn.barzahlen.de/images/barzahlen_logo.png', MODULE_PAYMENT_BARZAHLEN_TEXT_TITLE) . '</div><br>' . MODULE_PAYMENT_BARZAHLEN_TEXT_DESCRIPTION;
     $this->sort_order = MODULE_PAYMENT_BARZAHLEN_SORT_ORDER;
@@ -44,7 +44,7 @@ class barzahlen {
     $this->defaultCurrency = 'EUR';
 
     $this->cert = DIR_WS_MODULES . 'payment/barzahlen/ca-bundle.crt';
-    $this->logFile = DIR_WS_CATALOG . 'logs/barzahlen.log';
+    $this->logFile = DIR_FS_CATALOG . 'logs/barzahlen.log';
     $this->currencies = array('EUR');
     $this->connectAttempts = 0;
   }
@@ -527,8 +527,7 @@ class barzahlen {
    */
   function _bzDebug($message) {
     if(MODULE_PAYMENT_BARZAHLEN_DEBUG == 'True') {
-      $time = date("[Y-m-d H:i:s] ");
-      error_log($time. $message . "\r\r", 3, $this->logFile);
+      $this->_bzLog($message);
     }
   }
 

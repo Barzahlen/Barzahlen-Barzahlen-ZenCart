@@ -1,3 +1,7 @@
+==1.1.1 (12.11.2012)==
+* renamed log file folder to match default one form Zen Cart v1.5.1
+* updated error loggings file destination
+
 ==1.1.0 (30.10.2012)==
 * implemented new api geocoding feature to get the closest points of sales
 * reduced the maximum amount to 999.99 Euros
