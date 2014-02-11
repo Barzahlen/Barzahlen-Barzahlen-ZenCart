@@ -62,5 +62,6 @@ define('MODULE_PAYMENT_BARZAHLEN_TEXT_PAYMENT_ERROR', '<p>Payment via Barzahlen 
 define('MODULE_PAYMENT_BARZAHLEN_TEXT_X_ATTEMPT_SUCCESS', 'Barzahlen: payment slip requested and sent successfully');
 define('MODULE_PAYMENT_BARZAHLEN_TEXT_TRANSACTION_PAID', 'Barzahlen: The payment slip was paid successfully.');
 define('MODULE_PAYMENT_BARZAHLEN_TEXT_TRANSACTION_EXPIRED', 'Barzahlen: The time frame for the payment slip expired.');
+define('MODULE_PAYMENT_BARZAHLEN_TEXT_PAYMENT_ATTEMPT_FAILED', 'Barzahlen: Payment via Barzahlen was unfortunately not possible.');
 
 ?>

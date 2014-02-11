@@ -6,4 +6,4 @@ Barzahlen Payment Module (Zen Cart)
 http://www.barzahlen.de
 
 ==Current Version==
-1.1.1
+1.1.2

@@ -56,6 +56,8 @@ class ModuleBarzahlenTest extends PHPUnit_Framework_TestCase {
     $this->assertFalse($this->object->confirmation());
     $this->assertFalse($this->object->process_button());
     $this->assertFalse($this->object->output_error());
+    $this->assertFalse($this->object->before_process());
+    $this->assertFalse($this->object->after_process());
   }
 
   /**
@@ -137,10 +139,8 @@ class ModuleBarzahlenTest extends PHPUnit_Framework_TestCase {
                  ->method('_sendTransArray')
                  ->will($this->returnValue($xml));
 
-    $this->object->before_process(5);
+    $this->object->after_order_create(5);
     $this->assertTrue($_SESSION['payment_method_messages'] != '');
-
-    $this->object->after_process();
   }
 
   /**
@@ -170,10 +170,8 @@ class ModuleBarzahlenTest extends PHPUnit_Framework_TestCase {
                  ->method('_sendTransArray')
                  ->will($this->onConsecutiveCalls($xml1, $xml2));
 
-    $this->object->before_process(5);
+    $this->object->after_order_create(5);
     $this->assertTrue($_SESSION['payment_method_messages'] != '');
-
-    $this->object->after_process();
   }
 
   /**
@@ -197,7 +195,7 @@ class ModuleBarzahlenTest extends PHPUnit_Framework_TestCase {
                  ->method('_sendTransArray')
                  ->will($this->returnValue($xml));
 
-    $this->object->before_process(5);
+    $this->object->after_order_create(5);
     $this->assertTrue(!isset($_SESSION['payment_method_messages']));
 
     $this->object->get_error();

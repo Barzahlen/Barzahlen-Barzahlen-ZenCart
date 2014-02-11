@@ -1,3 +1,7 @@
+==1.1.2 (29.11.2012)==
+* refactored payment process code
+* increased reliability of avoiding total order amount miscalculation
+
 ==1.1.1 (12.11.2012)==
 * renamed log file folder to match default one form Zen Cart v1.5.1
 * updated error loggings file destination

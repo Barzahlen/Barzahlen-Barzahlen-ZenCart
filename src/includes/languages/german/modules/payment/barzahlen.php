@@ -62,5 +62,6 @@ define('MODULE_PAYMENT_BARZAHLEN_TEXT_PAYMENT_ERROR', 'Es gab einen Fehler bei d
 define('MODULE_PAYMENT_BARZAHLEN_TEXT_X_ATTEMPT_SUCCESS', 'Barzahlen: Zahlschein erfolgreich angefordert und versendet');
 define('MODULE_PAYMENT_BARZAHLEN_TEXT_TRANSACTION_PAID', 'Barzahlen: Der Zahlschein wurde beim Offline-Partner bezahlt.');
 define('MODULE_PAYMENT_BARZAHLEN_TEXT_TRANSACTION_EXPIRED', 'Barzahlen: Der Zahlungszeitraum des Zahlscheins ist abgelaufen.');
+define('MODULE_PAYMENT_BARZAHLEN_TEXT_PAYMENT_ATTEMPT_FAILED', 'Barzahlen: Es gab einen Fehler bei der Datenübertragung.');
 
 ?>
