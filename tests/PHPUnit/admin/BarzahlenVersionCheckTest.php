@@ -2,23 +2,9 @@
 /**
  * Barzahlen Payment Module (Zen Cart)
  *
- * NOTICE OF LICENSE
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; version 2 of the License
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- *
- * @copyright   Copyright (c) 2012 Zerebro Internet GmbH (http://www.barzahlen.de)
+ * @copyright   Copyright (c) 2014 Cash Payment Solutions GmbH (https://www.barzahlen.de)
  * @author      Mathias Hertlein
+ * @author      Alexander Diebler
  * @license     http://opensource.org/licenses/GPL-2.0  GNU General Public License, version 2 (GPL-2.0)
  */
 
@@ -30,69 +16,63 @@ class BarzahlenVersionCheckTest extends PHPUnit_Framework_TestCase
     private $paymentKey;
     private $shopSystemVersion;
 
+    private $db;
     private $request;
-    private $configRepository;
 
     public function setUp()
     {
-        $this->shopId = 1337;
-        $this->paymentKey = "asdfdsfafd";
-        $this->shopSystemVersion = "1.0";
-
-        $this->request = $this->getMock("BarzahlenPluginCheckRequest", array("sendRequest", "getPluginVersion"), array(), "", false);
-        $this->configRepository = $this->getMock("BarzahlenConfigRepository", array("getLastUpdateDate", "insertLastUpdateDate", "updateLastUpdateDate"), array(), "", false);
+        $this->shopId = MODULE_PAYMENT_BARZAHLEN_SHOPID;
+        $this->shopSystemVersion = "1.0.6";
+        $this->db = new db_handler;
+        $this->request = $this->getMock("BarzahlenPluginCheckRequest", array("sendRequest", "getPluginVersion", "getPluginUrl"), array(), "", false);
     }
 
     public function createVersionCheck()
     {
-        return new BarzahlenVersionCheck($this->request, $this->configRepository);
+        return new BarzahlenVersionCheck($this->request);
     }
 
-    public function testCheckedInLastWeekReturnsTrueWhenLastCheckIsLongerAgoThanAWeek()
+    public function testCheckedInLastWeekReturnsTrueWhenLastCheckIsNotLongerAgoThanAWeek()
     {
-        $lastUpdateDate = strtotime("2013-01-01 00:00:00");
-        $now = strtotime("2013-01-06 00:00:00");
+        global $db;
 
-        $this->configRepository
-            ->expects($this->any())
-            ->method('getLastUpdateDate')
-            ->will($this->returnValue($lastUpdateDate));
+        $now = new DateTime();
+        $sql_data = array(
+            'configuration_key' => 'MODULE_PAYMENT_BARZAHLEN_LAST_UPDATE_CHECK',
+            'configuration_value' => $now->format('Y-m-d H:i:s'),
+            'configuration_group_id' => 6,
+            'date_added' => 'now()'
+        );
+        $db->perform(TABLE_CONFIGURATION, $sql_data);
 
         $versionCheck = $this->createVersionCheck();
-        $isChecked = $versionCheck->isCheckedInLastWeek($now);
-
-        $this->assertTrue($isChecked);
+        $this->assertTrue($versionCheck->isCheckedInLastWeek());
     }
 
-    public function testCheckedInLastWeekReturnsFalseWhenLastCheckIsNotLongerAgoThanAWeek()
+    public function testCheckedInLastWeekReturnsFalseWhenLastCheckIsLongerAgoThanAWeek()
     {
-        $lastUpdateDate = strtotime("2013-01-01 00:00:00");
-        $now = strtotime("2013-01-08 00:00:00");
+        global $db;
 
-        $this->configRepository
-            ->expects($this->any())
-            ->method('getLastUpdateDate')
-            ->will($this->returnValue($lastUpdateDate));
+        $sql_data = array(
+            'configuration_key' => 'MODULE_PAYMENT_BARZAHLEN_LAST_UPDATE_CHECK',
+            'configuration_value' => '2013-01-01 00:00:00',
+            'configuration_group_id' => 6,
+            'date_added' => 'now()'
+        );
+        $db->perform(TABLE_CONFIGURATION, $sql_data);
 
         $versionCheck = $this->createVersionCheck();
-        $isChecked = $versionCheck->isCheckedInLastWeek($now);
-
-        $this->assertFalse($isChecked);
+        $this->assertFalse($versionCheck->isCheckedInLastWeek());
     }
 
-    public function testCheckedInLastWeekReturnsFalseWhenRepositoryReturnsFalse()
+    public function testCheckedInLastWeekReturnsFalseWhenNeverChecked()
     {
-        $now = strtotime("2013-01-08 00:00:00");
+        global $db;
 
-        $this->configRepository
-            ->expects($this->any())
-            ->method('getLastUpdateDate')
-            ->will($this->returnValue(false));
+        $db->Execute("DELETE FROM " . TABLE_CONFIGURATION . " WHERE configuration_key = 'MODULE_PAYMENT_BARZAHLEN_LAST_UPDATE_CHECK'");
 
         $versionCheck = $this->createVersionCheck();
-        $isChecked = $versionCheck->isCheckedInLastWeek($now);
-
-        $this->assertFalse($isChecked);
+        $this->assertFalse($versionCheck->isCheckedInLastWeek());
     }
 
     public function testRequestWillBeSendToBarzahlenApi()
@@ -100,36 +80,6 @@ class BarzahlenVersionCheckTest extends PHPUnit_Framework_TestCase
         $this->request
             ->expects($this->once())
             ->method('sendRequest');
-
-        $versionCheck = $this->createVersionCheck();
-        $versionCheck->check($this->shopId, $this->paymentKey, $this->shopSystemVersion);
-    }
-
-    public function testLastCheckDateWillBeInsertedIfNotExists()
-    {
-        $this->configRepository
-            ->expects($this->any())
-            ->method('getLastUpdateDate')
-            ->will($this->returnValue(false));
-
-        $this->configRepository
-            ->expects($this->once())
-            ->method('insertLastUpdateDate');
-
-        $versionCheck = $this->createVersionCheck();
-        $versionCheck->check($this->shopId, $this->paymentKey, $this->shopSystemVersion);
-    }
-
-    public function testLastCheckDateWillBeUpdatedIfExists()
-    {
-        $this->configRepository
-            ->expects($this->any())
-            ->method('getLastUpdateDate')
-            ->will($this->returnValue(time()));
-
-        $this->configRepository
-            ->expects($this->once())
-            ->method('updateLastUpdateDate');
 
         $versionCheck = $this->createVersionCheck();
         $versionCheck->check($this->shopId, $this->paymentKey, $this->shopSystemVersion);
@@ -164,15 +114,29 @@ class BarzahlenVersionCheckTest extends PHPUnit_Framework_TestCase
     public function testGetNewestVersionReturnsVersionFromRequest()
     {
         $expectedVersion = "999.2.3.4.5.";
+        $expectedUrl = "https://integration.barzahlen.de";
 
         $this->request
-            ->expects($this->any())
+            ->expects($this->once())
             ->method('getPluginVersion')
             ->will($this->returnValue($expectedVersion));
+
+        $this->request
+            ->expects($this->once())
+            ->method('getPluginUrl')
+            ->will($this->returnValue($expectedUrl));
 
         $versionCheck = $this->createVersionCheck();
         $versionCheck->check($this->shopId, $this->paymentKey, $this->shopSystemVersion);
         $newVersion = $versionCheck->getNewestVersion();
         $this->assertEquals($expectedVersion, $newVersion);
+        $newVersionUrl = $versionCheck->getNewestVersionUrl();
+        $this->assertEquals($expectedUrl, $newVersionUrl);
+    }
+
+    public function tearDown()
+    {
+        unset($this->db);
+        unset($this->request);
     }
 }

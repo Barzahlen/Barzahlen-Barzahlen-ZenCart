@@ -2,23 +2,9 @@
 /**
  * Barzahlen Payment Module (Zen Cart)
  *
- * NOTICE OF LICENSE
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; version 2 of the License
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- *
- * @copyright   Copyright (c) 2013 Zerebro Internet GmbH (http://www.barzahlen.de)
+ * @copyright   Copyright (c) 2014 Cash Payment Solutions GmbH (https://www.barzahlen.de)
  * @author      Mathias Hertlein
+ * @author      Alexander Diebler
  * @license     http://opensource.org/licenses/GPL-2.0  GNU General Public License, version 2 (GPL-2.0)
  */
 
@@ -28,56 +14,59 @@
 class BarzahlenVersionCheck
 {
     const SHOP_SYSTEM = "Zen Cart";
-    const PLUGIN_VERSION = "1.1.8";
+    const PLUGIN_VERSION = "1.2.0";
 
     /**
      * @var BarzahlenPluginCheckRequest
      */
     private $request;
-    /**
-     * @var BarzahlenConfigRepository
-     */
-    private $configRepository;
-
 
     /**
      * @param BarzahlenPluginCheckRequest $request
-     * @param BarzahlenConfigRepository $configRepository
      */
-    public function __construct($request, $configRepository)
+    public function __construct($request)
     {
         $this->request = $request;
-        $this->configRepository = $configRepository;
     }
 
     /**
      * Checks if version was checked in last week
      *
-     * @param int $now
-     * @return bool
+     * @return boolean
      */
-    public function isCheckedInLastWeek($now)
+    public function isCheckedInLastWeek()
     {
-        $lastUpdate = $this->configRepository->getLastUpdateDate();
-        if ($lastUpdate) {
-            $isChecked = ($now - $lastUpdate) < 60 * 60 * 24 * 7;
-        } else {
-            $isChecked = false;
+        global $db;
+
+        $lastQuery = $db->Execute("SELECT configuration_value
+                                     FROM " . TABLE_CONFIGURATION . "
+                                    WHERE configuration_key = 'MODULE_PAYMENT_BARZAHLEN_LAST_UPDATE_CHECK'");
+
+        if($lastQuery->RecordCount() == 0) {
+            $db->Execute("INSERT INTO " . TABLE_CONFIGURATION . "
+                          (configuration_key, configuration_value, configuration_group_id, date_added)
+                          VALUES
+                          ('MODULE_PAYMENT_BARZAHLEN_LAST_UPDATE_CHECK', NOW(), '6', NOW())");
+
+            return false;
+        } elseif ((time() - strtotime($lastQuery->fields['configuration_value'])) > 60 * 60 * 24 * 7) {
+            $db->Execute("UPDATE " . TABLE_CONFIGURATION . "
+                             SET configuration_value = NOW()
+                           WHERE configuration_key = 'MODULE_PAYMENT_BARZAHLEN_LAST_UPDATE_CHECK'");
+
+            return false;
         }
 
-        return $isChecked;
+        return true;
     }
 
     /**
      * Performs request and updates last check date
+     *
+     * @param integer $shopId
+     * @param string $shopSystemVersion
      */
-    public function check($shopId, $paymentKey, $shopSystemVersion)
-    {
-        $this->sendRequest($shopId, $paymentKey, $shopSystemVersion);
-        $this->updateLastCheckDate();
-    }
-
-    private function sendRequest($shopId, $paymentKey, $shopSystemVersion)
+    public function check($shopId, $shopSystemVersion)
     {
         $requestArray = array(
             'shop_id' => $shopId,
@@ -86,16 +75,7 @@ class BarzahlenVersionCheck
             'plugin_version' => self::PLUGIN_VERSION,
         );
 
-        $this->request->sendRequest($requestArray, $paymentKey);
-    }
-
-    private function updateLastCheckDate()
-    {
-        if ($this->configRepository->getLastUpdateDate() == false) {
-            $this->configRepository->insertLastUpdateDate();
-        } else {
-            $this->configRepository->updateLastUpdateDate();
-        }
+        $this->request->sendRequest($requestArray);
     }
 
     /**
@@ -112,5 +92,13 @@ class BarzahlenVersionCheck
     public function getNewestVersion()
     {
         return $this->request->getPluginVersion();
+    }
+
+    /**
+     * @return string
+     */
+    public function getNewestVersionUrl()
+    {
+        return $this->request->getPluginUrl();
     }
 }

@@ -1,12 +1,19 @@
 # Barzahlen Payment Module (Zen Cart)
 
 ## User Manual
-https://integration.barzahlen.de/de/shopsysteme/zen-cart/nutzerhandbuch
+DE - https://integration.barzahlen.de/de/shopsysteme/zen-cart/nutzerhandbuch  
+EN - https://integration.barzahlen.de/en/shopsystems/zen-cart/user-manual
 
 ## Current Version
-1.1.8
+1.2.0
 
 ## Changelog
+
+### 1.2.0 (10.11.2014)
+* integrated Barzahlen PHP SDK v1.1.7 (Payment & Cancel)
+* automatic payment slip cancellation for cancelled orders
+* callback returns 200 (OK) only after successful database update
+* improved payment selection
 
 ### 1.1.8 (11.02.2014)
 * plugin check works in PHP versions lower than 5.2 now
@@ -49,7 +56,7 @@ https://integration.barzahlen.de/de/shopsysteme/zen-cart/nutzerhandbuch
 * initial release
 
 ## Support
-The Barzahlen Team will happily assist you with any problems or questions. Send us an email to support@barzahlen.de or use the contact form at http://www.barzahlen.de/partner/integration.
+The Barzahlen Team will happily assist you with any problems or questions. Send us an email to support@barzahlen.de or use the contact form at https://integration.barzahlen.de/en/support.
 
 ## Copyright
 (c) 2014, Cash Payment Solutions GmbH  

@@ -39,6 +39,8 @@ define('DB_HOST', 'localhost');
 define('DB_USER', 'zencart');
 define('DB_PASSWORD', 'zencart');
 define('DB_DATABASE', 'zencart_copy');
+define('PROJECT_VERSION_MAJOR', '1');
+define('PROJECT_VERSION_MINOR', '5.0');
 
 define('TABLE_CONFIGURATION', 'configuration');
 define('TABLE_ORDERS', 'orders');
@@ -57,6 +59,10 @@ define('MODULE_PAYMENT_BARZAHLEN_PAYMENTKEY', '20a7e7235b2de0e0fda66ff8ae06665fb
 define('MODULE_PAYMENT_BARZAHLEN_NOTIFICATIONKEY', '20bc75e9ca4b72f4b216bf623299295a5a814541');
 define('MODULE_PAYMENT_BARZAHLEN_MAXORDERTOTAL', '999.99');
 define('MODULE_PAYMENT_BARZAHLEN_SORT_ORDER', '0');
+
+define('SHOPID', '10483');
+define('PAYMENTKEY', 'de74310368a4718a48e0e244fbf3e22e2ae117f2');
+define('NOTIFICATIONKEY', 'e5354004de1001f86004090d01982a6e05da1c12');
 
 /**
  * DB-Handler
@@ -99,6 +105,19 @@ class db
             $result = new db_result($query);
             return $result;
         }
+
+        return mysql_query($query);
+    }
+
+    public function perform($table, $array)
+    {
+        $keys = "";
+        $values = "";
+        foreach($array as $key => $value) {
+            $keys .= $key . ", ";
+            $values .= "'" . $value . "', ";
+        }
+        $query = "INSERT INTO " . $table . " (" . substr($keys, 0, -2) . ") VALUES (" . substr($values, 0, -2) . ");";
 
         return mysql_query($query);
     }

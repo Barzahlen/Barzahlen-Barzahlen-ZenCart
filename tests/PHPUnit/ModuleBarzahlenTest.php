@@ -2,22 +2,7 @@
 /**
  * Barzahlen Payment Module (Zen Cart)
  *
- * NOTICE OF LICENSE
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; version 2 of the License
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- *
- * @copyright   Copyright (c) 2012 Zerebro Internet GmbH (http://www.barzahlen.de)
+ * @copyright   Copyright (c) 2014 Cash Payment Solutions GmbH (https://www.barzahlen.de)
  * @author      Alexander Diebler
  * @license     http://opensource.org/licenses/GPL-2.0  GNU General Public License, version 2 (GPL-2.0)
  */
@@ -26,7 +11,6 @@ require_once('src/includes/modules/payment/barzahlen.php');
 
 class ModuleBarzahlenTest extends PHPUnit_Framework_TestCase
 {
-
     /**
      * Set everything that is needed for the testing up.
      */
@@ -35,17 +19,6 @@ class ModuleBarzahlenTest extends PHPUnit_Framework_TestCase
         $this->db = new db_handler;
         $this->object = new barzahlen;
         $_SESSION['payment_method_messages'] = '';
-    }
-
-    /**
-     * Tests payment settings.
-     */
-    public function testPaymentSettings()
-    {
-        $this->assertEquals('https://api.barzahlen.de/v1/transactions/', barzahlen::APIDOMAIN);
-        $this->assertEquals('https://api-sandbox.barzahlen.de/v1/transactions/', barzahlen::APIDOMAINSANDBOX);
-        $this->assertEquals(';', barzahlen::HASHSEPARATOR);
-        $this->assertEquals('sha512', barzahlen::HASHALGORITHM);
     }
 
     /**
@@ -89,13 +62,7 @@ class ModuleBarzahlenTest extends PHPUnit_Framework_TestCase
      */
     public function testSelection()
     {
-        $title = MODULE_PAYMENT_BARZAHLEN_TEXT_TITLE;
-
-        if (MODULE_PAYMENT_BARZAHLEN_SANDBOX == 'True') {
-            $title .= ' [SANDBOX]';
-        }
-
-        $expected = array('id' => 'barzahlen', 'module' => $title);
+        $expected = array('id' => 'barzahlen', 'module' => MODULE_PAYMENT_BARZAHLEN_TEXT_TITLE);
 
         $output = $this->object->selection();
         unset($output['fields']);
@@ -119,51 +86,25 @@ class ModuleBarzahlenTest extends PHPUnit_Framework_TestCase
     public function testPaymentActionWithVaildXml()
     {
         $xml = '<?xml version="1.0" encoding="UTF-8"?>
-            <response>
-              <transaction-id>227840174</transaction-id>
-              <payment-slip-link>https://cdn.barzahlen.de/slip/227840174/c91dc292bdb8f0ba1a83c738119ef13e652a43b8a8f261cf93d3bfbf233d7da2.pdf</payment-slip-link>
-              <expiration-notice>Der Zahlschein ist 10 Tage gueltig.</expiration-notice>
-              <infotext-1><![CDATA[Text mit einem <a href="https://www.barzahlen.de" target="_blank">Link</a>]]></infotext-1>
-              <infotext-2><![CDATA[Text mit einem <a href="https://www.barzahlen.de" target="_blank">Link</a>]]></infotext-2>
-              <result>0</result>
-              <hash>dc5e9ab111eb8ba3bbef491fd61b6e3a943a0e62a4b34d0d8642e90be432b6afe93f7c3dd62117d0b260c3cb912b0948b50c87a3f3b9b8560a0d13029a0fc1c3</hash>
-            </response>';
+                <response>
+                  <transaction-id>227840174</transaction-id>
+                  <payment-slip-link>https://cdn.barzahlen.de/slip/227840174/c91dc292bdb8f0ba1a83c738119ef13e652a43b8a8f261cf93d3bfbf233d7da2.pdf</payment-slip-link>
+                  <expiration-notice>Der Zahlschein ist 10 Tage gueltig.</expiration-notice>
+                  <infotext-1><![CDATA[Text mit einem <a href="https://www.barzahlen.de" target="_blank">Link</a>]]></infotext-1>
+                  <infotext-2><![CDATA[Text mit einem <a href="https://www.barzahlen.de" target="_blank">Link</a>]]></infotext-2>
+                  <result>0</result>
+                  <hash>dc5e9ab111eb8ba3bbef491fd61b6e3a943a0e62a4b34d0d8642e90be432b6afe93f7c3dd62117d0b260c3cb912b0948b50c87a3f3b9b8560a0d13029a0fc1c3</hash>
+                </response>';
 
-        $this->object = $this->getMock('barzahlen', array('_sendTransArray'));
-        $this->object->expects($this->any())
-            ->method('_sendTransArray')
+        $api = $this->getMock('Barzahlen_Api', array('_connectToApi'), array(MODULE_PAYMENT_BARZAHLEN_SHOPID, MODULE_PAYMENT_BARZAHLEN_PAYMENTKEY));
+        $api->expects($this->once())
+            ->method('_connectToApi')
             ->will($this->returnValue($xml));
 
-        $this->object->after_order_create(5);
-        $this->assertTrue($_SESSION['payment_method_messages'] != '');
-    }
-
-    /**
-     * Tests payment action with error and valid xml answer.
-     */
-    public function testPaymentActionWithErrorAndVaildXml()
-    {
-        $xml1 = '<?xml version="1.0" encoding="UTF-8"?>
-             <response>
-               <result>10</result>
-               <error-message>shop not found</error-message>
-             </response>';
-
-        $xml2 = '<?xml version="1.0" encoding="UTF-8"?>
-             <response>
-               <transaction-id>227840174</transaction-id>
-               <payment-slip-link>https://cdn.barzahlen.de/slip/227840174/c91dc292bdb8f0ba1a83c738119ef13e652a43b8a8f261cf93d3bfbf233d7da2.pdf</payment-slip-link>
-               <expiration-notice>Der Zahlschein ist 10 Tage gueltig.</expiration-notice>
-               <infotext-1><![CDATA[Text mit einem <a href="https://www.barzahlen.de" target="_blank">Link</a>]]></infotext-1>
-               <infotext-2><![CDATA[Text mit einem <a href="https://www.barzahlen.de" target="_blank">Link</a>]]></infotext-2>
-               <result>0</result>
-               <hash>dc5e9ab111eb8ba3bbef491fd61b6e3a943a0e62a4b34d0d8642e90be432b6afe93f7c3dd62117d0b260c3cb912b0948b50c87a3f3b9b8560a0d13029a0fc1c3</hash>
-             </response>';
-
-        $this->object = $this->getMock('barzahlen', array('_sendTransArray'));
-        $this->object->expects($this->any())
-            ->method('_sendTransArray')
-            ->will($this->onConsecutiveCalls($xml1, $xml2));
+        $this->object = $this->getMock('barzahlen', array('createApi'));
+        $this->object->expects($this->once())
+            ->method('createApi')
+            ->will($this->returnValue($api));
 
         $this->object->after_order_create(5);
         $this->assertTrue($_SESSION['payment_method_messages'] != '');
@@ -175,40 +116,30 @@ class ModuleBarzahlenTest extends PHPUnit_Framework_TestCase
     public function testPaymentActionWithInvalidHash()
     {
         $xml = '<?xml version="1.0" encoding="UTF-8"?>
-            <response>
-              <transaction-id>227840174</transaction-id>
-              <payment-slip-link>https://cdn.barzahlen.de/slip/227840174/c91dc292bdb8f0ba1a83c738119ef13e652a43b8a8f261cf93d3bfbf233d7da2.pdf</payment-slip-link>
-              <expiration-notice>Der Zahlschein ist 10 Tage gueltig.</expiration-notice>
-              <infotext-1><![CDATA[Text mit einem <a href="https://www.barzahlen.de" target="_blank">Link</a>]]></infotext-1>
-              <infotext-2><![CDATA[Text mit einem <a href="https://www.barzahlen.de" target="_blank">Link</a>]]></infotext-2>
-              <result>0</result>
-              <hash>dc5e9ab111eb8ba3bbef491fd61b6e3a943a0e62a4b34d0d8642e90be432b6afe93f7c3dd62117d0b260c3cb912b0948b50c87a3f3b9b8560a0d13029a0fc1c4</hash>
-            </response>';
+                <response>
+                  <transaction-id>227840174</transaction-id>
+                  <payment-slip-link>https://cdn.barzahlen.de/slip/227840174/c91dc292bdb8f0ba1a83c738119ef13e652a43b8a8f261cf93d3bfbf233d7da2.pdf</payment-slip-link>
+                  <expiration-notice>Der Zahlschein ist 10 Tage gueltig.</expiration-notice>
+                  <infotext-1><![CDATA[Text mit einem <a href="https://www.barzahlen.de" target="_blank">Link</a>]]></infotext-1>
+                  <infotext-2><![CDATA[Text mit einem <a href="https://www.barzahlen.de" target="_blank">Link</a>]]></infotext-2>
+                  <result>0</result>
+                  <hash>dc5e9ab111eb8ba3bbef491fd61b6e3a943a0e62a4b34d0d8642e90be432b6afe93f7c3dd62117d0b260c3cb912b0948b50c87a3f3b9b8560a0d13029a0fc1c4</hash>
+                </response>';
 
-        $this->object = $this->getMock('barzahlen', array('_sendTransArray'));
-        $this->object->expects($this->any())
-            ->method('_sendTransArray')
+        $api = $this->getMock('Barzahlen_Api', array('_connectToApi'), array(MODULE_PAYMENT_BARZAHLEN_SHOPID, MODULE_PAYMENT_BARZAHLEN_PAYMENTKEY));
+        $api->expects($this->once())
+            ->method('_connectToApi')
             ->will($this->returnValue($xml));
+
+        $this->object = $this->getMock('barzahlen', array('createApi'));
+        $this->object->expects($this->once())
+            ->method('createApi')
+            ->will($this->returnValue($api));
 
         $this->object->after_order_create(5);
         $this->assertTrue($_SESSION['payment_method_messages'] == '');
 
         $this->object->get_error();
-    }
-
-    /**
-     * Tests xml parsing with corrupt xml.
-     */
-    public function testGetXmlResponseWithCorruptXml()
-    {
-        $xml = '<?xml version="1.0" encoding="UTF-8"?>
-            <response>
-              <transactionid>227840174</transaction-id>
-              <expiration-notice>Der Zahlschein ist 10 Tage gueltig.</expiration-notice>
-              <result>0</result>
-            </response>';
-
-        $this->assertEquals(null, $this->object->_getResponseData('create', $xml));
     }
 
     /**
