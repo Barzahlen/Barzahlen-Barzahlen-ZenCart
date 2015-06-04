@@ -81,7 +81,7 @@ class barzahlen
             $description = MODULE_PAYMENT_BARZAHLEN_TEXT_FRONTEND_DESCRIPTION . MODULE_PAYMENT_BARZAHLEN_TEXT_FRONTEND_PARTNER;
             for ($i = 1; $i <= 10; $i++) {
                 $count = str_pad($i, 2, "0", STR_PAD_LEFT);
-                $description .= '<img src="https://cdn.barzahlen.de/images/barzahlen_partner_' . $count . '.png" alt="" style="vertical-align: middle; height: 25px;">';
+                $description .= '<img src="https://cdn.barzahlen.de/images/barzahlen_partner_' . $count . '.png" alt="" style="height: 1em; vertical-align: -0.1em;">';
             }
             $description .= '<script src="https://cdn.barzahlen.de/js/selection.js"></script>';
 
