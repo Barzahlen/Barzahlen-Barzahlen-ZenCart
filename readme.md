@@ -5,9 +5,13 @@ DE - https://integration.barzahlen.de/de/shopsysteme/zen-cart/nutzerhandbuch
 EN - https://integration.barzahlen.de/en/shopsystems/zen-cart/user-manual
 
 ## Current Version
-1.2.0
+1.2.1
 
 ## Changelog
+
+### 1.2.1 (05.06.2015)
+* improved payment selection
+* updated to Barzahlen PHP SDK v1.1.8
 
 ### 1.2.0 (10.11.2014)
 * integrated Barzahlen PHP SDK v1.1.7 (Payment & Cancel)
@@ -59,7 +63,7 @@ EN - https://integration.barzahlen.de/en/shopsystems/zen-cart/user-manual
 The Barzahlen Team will happily assist you with any problems or questions. Send us an email to support@barzahlen.de or use the contact form at https://integration.barzahlen.de/en/support.
 
 ## Copyright
-(c) 2014, Cash Payment Solutions GmbH  
+(c) 2015, Cash Payment Solutions GmbH  
 https://www.barzahlen.de
 
 ## NOTICE OF LICENSE
